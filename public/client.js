@@ -1,5 +1,4 @@
-// --- DOM Elements (Vi griber fat i HTML-elementerne) ---
-// Vi bruger 'const', fordi referencen til elementet ikke ændrer sig.
+// --- DOM Elements ---
 
 // Views
 const viewHome = document.getElementById('view-home');
@@ -35,5 +34,36 @@ btnBack.addEventListener('click', () => {
 if (btnReadMore) {
     btnReadMore.addEventListener('click', () => {
         goToPost();
+    });
+}
+
+// --- Form Handling ---
+
+const commentForm = document.getElementById('comment-form');
+const feedbackMessage = document.getElementById('feedback-message');
+
+if (commentForm) {
+    commentForm.addEventListener('submit', (event) => {
+        // 1. PREVENT DEFAULT: Stop the browser from reloading the page
+        event.preventDefault();
+
+        // 2. Get values from the input fields
+        const author = document.getElementById('comment-author').value;
+        const text = document.getElementById('comment-text').value;
+
+        console.log("Form submitted by:", author);
+        console.log("Comment text:", text);
+
+        // 3. Clear previous feedback
+        feedbackMessage.textContent = "Arbejder...";
+        feedbackMessage.style.color = "blue";
+
+       // 4. URL validation (placeholder for now)
+        setTimeout(() => {
+             feedbackMessage.textContent = "Tak for din kommentar! (URL validering kommer snart)";
+             feedbackMessage.style.color = "green";
+             // Clear the form
+             commentForm.reset();
+        }, 1000);
     });
 }
