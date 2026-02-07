@@ -49,7 +49,7 @@ const commentForm = document.getElementById('comment-form');
 const feedbackMessage = document.getElementById('feedback-message');
 
 if (commentForm) {
-    commentForm.addEventListener('submit', (event) => {
+    commentForm.addEventListener('submit', async (event) => {
         // 1. PREVENT DEFAULT: Stop the browser from reloading the page
         event.preventDefault();
 
@@ -60,12 +60,10 @@ if (commentForm) {
         //3. Use out Helper Function to extract URLs from the text
         const foundUrls = extractUrls(text);
 
-        console.log("Form submitted by:", author);
-        console.log("Comment text:", text);
-        console.log("Fundne URL'er:", foundUrls);
+        console.log("Sender forespørgsel for:", author);
 
-        // 4. Clear previous feedback
-        feedbackMessage.textContent = "Arbejder...";
+        // 4. Provide feedback to the user (UX)
+        feedbackMessage.textContent = "Analyserer din kommentar hos serveren...";
         feedbackMessage.style.color = "blue";
 
        // 5. URL validation (placeholder for now)
@@ -73,8 +71,36 @@ if (commentForm) {
             // SCENARIO 1: There are URLs in the comment
             feedbackMessage.textContent = `⚠️ Hov! Jeg fandt ${foundUrls.length} link(s). De skal lige sikkerhedstjekkes hos serveren...`;
             feedbackMessage.style.color = "orange";
-            
-            // Calling the server (placeholder for now)
+
+            try {
+                const response = await fetch('/api/validate-urls', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls: foundUrls })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server svarede med status ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.allSafe) {
+                    feedbackMessage.textContent = "Alle links er sikre! Din kommentar er publiceret.";
+                    feedbackMessage.style.color = "green";
+                    commentForm.reset();
+                } else {
+                    const unsafeUrls = data.results
+                        .filter((r) => !r.safe)
+                        .map((r) => r.url);
+                    feedbackMessage.textContent = `Advarsel! ${unsafeUrls.length} link(s) blev markeret som usikre: ${unsafeUrls.join(', ')}`;
+                    feedbackMessage.style.color = "red";
+                }
+            } catch (error) {
+                feedbackMessage.textContent = "Fejl: Kunne ikke kontakte serveren. Prøv igen senere.";
+                feedbackMessage.style.color = "red";
+                console.error("Validation fetch error:", error);
+            }
         } else {
             // SCENARIO 2: No URLs found, just a regular comment
             setTimeout(() => {
