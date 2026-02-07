@@ -27,14 +27,11 @@ const blogPostSchema = new mongoose.Schema({
 const BlogPost = mongoose.model('BlogPost', blogPostSchema);
 
 // --- Database Seeding ---
-async function seedBlogPosts() {
-    const count = await BlogPost.countDocuments();
-    if (count === 0) {
-        await BlogPost.create({
-            title: 'Fra Idé til Kode: Sådan byggede jeg min egen sikre Blog App',
-            content: `<p>Velkommen til mit allerførste blogindlæg! Det særlige ved netop dette indlæg er, at jeg selv har kodet hele platformen, det ligger på. Dette projekt har været min legeplads for at omsætte teori til praksis på 1. semester.</p>
+const SEED_CONTENT = {
+    title: 'Fra Idé til Kode: Sådan byggede jeg min egen sikre Blog App',
+    content: `<p>Velkommen til mit allerførste blogindlæg! Det særlige ved netop dette indlæg er, at jeg selv har kodet hele platformen, det ligger på. Dette projekt har været min legeplads for at omsætte teori til praksis på 1. semester.</p>
 
-<h3>🛠️ Arkitekturen</h3>
+<h3>Arkitekturen</h3>
 <p>I stedet for at bruge færdige løsninger som WordPress, har jeg bygget denne applikation fra bunden (Vanilla JS og Node.js). Målet var at skabe en <strong>Single Page Application (SPA)</strong>. Det betyder, at når du navigerer rundt eller poster en kommentar, genindlæser siden ikke. Det giver en lynhurtig og app-lignende brugeroplevelse.</p>
 
 <p>Teknisk stack:</p>
@@ -44,11 +41,12 @@ async function seedBlogPosts() {
     <li><strong>Arkitektur:</strong> REST API struktur med klar adskillelse mellem klient og server.</li>
 </ul>
 
-<h3>🛡️ Sikkerhed og URL-validering</h3>
+<h3>Sikkerhed og URL-validering</h3>
 <p>En af de største udfordringer var at sikre kommentarfeltet. Jeg ville ikke bare tillade hvilke som helst links. Derfor har jeg bygget en custom <strong>URL Validator</strong>.</p>
+
 <p>Systemet bruger <em>Regular Expressions (Regex)</em> til at spotte links i teksten. Herefter sendes linket til min backend, som asynkront tjekker, om domænet er på en "blacklist" eller har et dårligt ry (simuleret via API-kald). Først når serveren siger "Godkendt", bliver kommentaren gemt. Det har lært mig utroligt meget om <code>async/await</code> og vigtigheden af "Server-side Validation".</p>
 
-<h3>💡 Hvad har jeg lært?</h3>
+<h3>Hvad har jeg lært?</h3>
 <p>Udover selve koden har jeg fokuseret meget på professionelle standarder:</p>
 <ul>
     <li><strong>Clean Code:</strong> At holde funktioner små og modulære (f.eks. ligger min validator-logik i en separat fil).</li>
@@ -57,8 +55,17 @@ async function seedBlogPosts() {
 </ul>
 
 <p>Prøv gerne kommentarfeltet herunder – men pas på, min URL-validator holder øje med dig! 😉</p>`
-        });
-        console.log('🌱 Seeded initial blog post');
+};
+
+async function seedBlogPosts() {
+    const count = await BlogPost.countDocuments();
+    if (count === 0) {
+        await BlogPost.create(SEED_CONTENT);
+        console.log('Seeded initial blog post');
+    } else {
+        // Update existing post to remove emojis from content
+        await BlogPost.updateOne({}, { $set: { title: SEED_CONTENT.title, content: SEED_CONTENT.content } });
+        console.log('Updated existing blog post');
     }
 }
 
