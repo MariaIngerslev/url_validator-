@@ -1,21 +1,29 @@
+require('dotenv/config');
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
 const { validateUrls } = require('./urlvalidator');
+
 const app = express();
 const PORT = 3000;
 
-// In-memory database for comments
-const commentsDB = [];
+// --- Mongoose Schema & Model ---
+const commentSchema = new mongoose.Schema({
+    author: String,
+    text: String,
+    email: String,
+    subscribe: Boolean,
+    date: { type: Date, default: Date.now }
+});
 
-// Middleware: Serve static files from the "public" directory
-// BEST PRACTICE: Since main.js is in 'src', we use '../public' to go up one level to root, then into public.
+const Comment = mongoose.model('Comment', commentSchema);
+
+// --- Middleware ---
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.json());
 
 // Basic route for the home page (fallback)
 app.get('/', (req, res) => {
-    // Sends the index.html file to the user
-    // Again, we navigate out of 'src' (..) and into 'public'
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
@@ -42,7 +50,7 @@ function extractUrls(text) {
 }
 
 // API endpoint for posting comments
-app.post('/api/comments', (req, res) => {
+app.post('/api/comments', async (req, res) => {
     const { author, text, email, subscribe } = req.body;
 
     if (!author || !text) {
@@ -63,24 +71,45 @@ app.post('/api/comments', (req, res) => {
         }
     }
 
-    const comment = {
-        id: commentsDB.length + 1,
-        author,
-        text,
-        date: new Date().toISOString()
-    };
+    try {
+        const commentData = { author, text };
 
-    if (subscribe && email) {
-        comment.email = email;
-        console.log("📧 SENDING MAIL TO: " + email);
+        if (subscribe && email) {
+            commentData.email = email;
+            commentData.subscribe = true;
+            console.log("📧 SENDING MAIL TO: " + email);
+        }
+
+        const comment = new Comment(commentData);
+        const saved = await comment.save();
+
+        res.status(201).json(saved);
+    } catch (err) {
+        console.error('Error saving comment:', err);
+        res.status(500).json({ error: 'Kunne ikke gemme kommentaren.' });
     }
-
-    commentsDB.push(comment);
-
-    res.status(201).json(comment);
 });
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+// API endpoint for fetching comments
+app.get('/api/comments', async (req, res) => {
+    try {
+        const comments = await Comment.find().sort({ date: -1 });
+        res.json(comments);
+    } catch (err) {
+        console.error('Error fetching comments:', err);
+        res.status(500).json({ error: 'Kunne ikke hente kommentarer.' });
+    }
 });
+
+// --- Connect to MongoDB, then start the server ---
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log('✅ Connected to MongoDB');
+        app.listen(PORT, () => {
+            console.log(`Server is running on http://localhost:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('❌ Failed to connect to MongoDB:', err.message);
+        process.exit(1);
+    });
