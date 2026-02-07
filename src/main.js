@@ -1,4 +1,4 @@
-require('dotenv/config');
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -102,6 +102,11 @@ app.get('/api/comments', async (req, res) => {
 });
 
 // --- Connect to MongoDB, then start the server ---
+if (!process.env.MONGO_URI) {
+    console.error('❌ MONGO_URI environment variable is not set');
+    process.exit(1);
+}
+
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('✅ Connected to MongoDB');
