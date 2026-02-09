@@ -2,7 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const { validateUrls } = require('./urlvalidator');
+const apiRoutes = require('./routes/api');
+const postsRoutes = require('./routes/posts');
+const commentsRoutes = require('./routes/comments');
 
 const app = express();
 const PORT = 3000;
@@ -78,93 +80,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
-// API endpoint for URL validation
-app.post('/api/validate-urls', (req, res) => {
-    const { urls } = req.body;
-
-    if (!urls || !Array.isArray(urls) || urls.length === 0) {
-        return res.status(400).json({
-            error: "Request body must include a non-empty 'urls' array."
-        });
-    }
-
-    const results = validateUrls(urls);
-    const allSafe = results.every((r) => r.safe);
-
-    res.json({ allSafe, results });
-});
-
-// Helper: extract URLs from text
-function extractUrls(text) {
-    const urlPattern = /(https?:\/\/[^\s]+)/g;
-    return text.match(urlPattern) || [];
-}
-
-// API endpoint for posting comments
-app.post('/api/comments', async (req, res) => {
-    const { author, text, email, subscribe } = req.body;
-
-    if (!author || !text) {
-        return res.status(400).json({ error: 'Navn og kommentar er påkrævet.' });
-    }
-
-    // Check URLs in the comment text
-    const foundUrls = extractUrls(text);
-    if (foundUrls.length > 0) {
-        const results = validateUrls(foundUrls);
-        const allSafe = results.every((r) => r.safe);
-        if (!allSafe) {
-            const unsafeUrls = results.filter((r) => !r.safe).map((r) => r.url);
-            return res.status(400).json({
-                error: `Kommentaren indeholder usikre links: ${unsafeUrls.join(', ')}`,
-                unsafeUrls
-            });
-        }
-    }
-
-    try {
-        const commentData = { author, text };
-
-        if (subscribe && email) {
-            commentData.email = email;
-            commentData.subscribe = true;
-            console.log("📧 SENDING MAIL TO: " + email);
-        }
-
-        const comment = new Comment(commentData);
-        const saved = await comment.save();
-
-        res.status(201).json(saved);
-    } catch (err) {
-        console.error('Error saving comment:', err);
-        res.status(500).json({ error: 'Kunne ikke gemme kommentaren.' });
-    }
-});
-
-// API endpoint for fetching the latest blog post
-app.get('/api/posts/latest', async (req, res) => {
-    try {
-        const post = await BlogPost.findOne().sort({ date: -1 });
-        if (!post) {
-            return res.status(404).json({ error: 'Ingen blogindlæg fundet.' });
-        }
-        res.json(post);
-    } catch (err) {
-        console.error('Error fetching latest post:', err);
-        res.status(500).json({ error: 'Kunne ikke hente blogindlæg.' });
-    }
-});
-
-// API endpoint for fetching comments
-app.get('/api/comments', async (req, res) => {
-    try {
-        const comments = await Comment.find().sort({ date: -1 });
-        res.json(comments);
-    } catch (err) {
-        console.error('Error fetching comments:', err);
-        res.status(500).json({ error: 'Kunne ikke hente kommentarer.' });
-    }
-});
+// Mount API routes
+app.use('/api', apiRoutes);
+app.use('/api/posts', postsRoutes);
+app.use('/api/comments', commentsRoutes);
 
 // --- Connect to MongoDB, then start the server ---
 if (!process.env.MONGO_URI) {

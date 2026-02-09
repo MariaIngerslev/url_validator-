@@ -13,7 +13,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Danish-language blog app with comment URL validation, built as an Express 5 SPA.
 
-**Backend** (`src/main.js`): Express server that serves static files from `public/`, parses JSON bodies, and exposes `POST /api/validate-urls` which delegates to the validator module.
+**Backend** (`src/main.js`): Express server entry point. Serves static files from `public/`, parses JSON bodies, defines Mongoose models/seeding, and mounts route modules. No route handlers are defined inline — all API logic lives in `src/routes/`.
+
+**Route modules** (`src/routes/`):
+- `api.js` — `POST /api/validate-urls`: delegates to the validator module.
+- `posts.js` — `GET /api/posts`, `POST /api/posts`: blog post CRUD.
+- `comments.js` — `POST /api/comments`, `GET /api/comments/:postId`: comments with URL safety checking and post-existence validation (404 if post not found).
+
+**Data store** (`src/data/store.js`): Shared in-memory singleton holding `posts` and `comments` arrays. Exports helper functions (`getPosts`, `getPostById`, `addPost`, `getCommentsByPostId`, `addComment`) used by the route modules for cross-resource data access.
 
 **Frontend** (`public/`): Single-page app with client-side view switching (no router library). Two views are toggled via `display: none/block`:
 - `view-home`: Blog post list
