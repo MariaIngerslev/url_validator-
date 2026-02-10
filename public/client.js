@@ -82,6 +82,35 @@ const el = (tag, className, textContent) => {
     return element;
 };
 
+const ALLOWED_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+    'UL', 'OL', 'LI', 'STRONG', 'EM', 'CODE', 'PRE', 'BR', 'A', 'BLOCKQUOTE']);
+
+function sanitizeHtml(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const clean = document.createDocumentFragment();
+
+    function walk(sourceNode, targetParent) {
+        for (const child of sourceNode.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE) {
+                targetParent.appendChild(document.createTextNode(child.textContent));
+            } else if (child.nodeType === Node.ELEMENT_NODE && ALLOWED_TAGS.has(child.tagName)) {
+                const safe = document.createElement(child.tagName);
+                if (child.tagName === 'A' && child.hasAttribute('href')) {
+                    const href = child.getAttribute('href');
+                    if (/^https?:\/\//.test(href)) safe.setAttribute('href', href);
+                }
+                walk(child, safe);
+                targetParent.appendChild(safe);
+            } else if (child.nodeType === Node.ELEMENT_NODE) {
+                walk(child, targetParent);
+            }
+        }
+    }
+
+    walk(doc.body, clean);
+    return clean;
+}
+
 // --- Feedback ---
 
 const FEEDBACK_CLASSES = ['feedback-loading', 'feedback-success', 'feedback-warning', 'feedback-error'];
@@ -164,7 +193,7 @@ async function renderPost(params) {
         fullPostContent.textContent = '';
 
         const postBody = el('div');
-        postBody.innerHTML = post.content;
+        postBody.appendChild(sanitizeHtml(post.content));
 
         fullPostContent.append(
             el('h2', null, post.title),
