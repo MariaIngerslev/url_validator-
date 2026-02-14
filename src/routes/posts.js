@@ -5,54 +5,38 @@ const validateObjectId = require('../middleware/validateObjectId');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    try {
-        const posts = await Post.find().sort({ createdAt: -1 });
-        res.json(posts);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch posts.' });
-    }
+    const posts = await Post.find().sort({ createdAt: -1 });
+    res.json(posts);
 });
 
 // Defined before /:id to avoid being caught by the param route
 router.get('/latest', async (req, res) => {
-    try {
-        const post = await Post.findOne().sort({ createdAt: -1 });
-        if (!post) {
-            return res.status(404).json({ error: 'No posts found.' });
-        }
-        res.json(post);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch latest post.' });
+    const latestPost = await Post.findOne().sort({ createdAt: -1 });
+    if (!latestPost) {
+        return res.status(404).json({ error: 'No posts found.' });
     }
+    res.json(latestPost);
 });
 
 router.get('/:id', validateObjectId('id'), async (req, res) => {
-    try {
-        const post = await Post.findById(req.params.id);
-        if (!post) {
-            return res.status(404).json({ error: 'Post not found.' });
-        }
-        res.json(post);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch post.' });
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+        return res.status(404).json({ error: 'Post not found.' });
     }
+    res.json(post);
 });
 
 router.post('/', async (req, res) => {
-    try {
-        const { title, content } = req.body;
+    const { title, content } = req.body;
 
-        if (!title || !content) {
-            return res.status(400).json({
-                error: "Both 'title' and 'content' are required."
-            });
-        }
-
-        const post = await Post.create({ title, content });
-        res.status(201).json(post);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to create post.' });
+    if (!title || !content) {
+        return res.status(400).json({
+            error: "Both 'title' and 'content' are required."
+        });
     }
+
+    const post = await Post.create({ title, content });
+    res.status(201).json(post);
 });
 
 module.exports = router;

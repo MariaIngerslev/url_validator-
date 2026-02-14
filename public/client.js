@@ -37,13 +37,13 @@ function navigateTo(url, pushState = true) {
     }
 }
 
-document.addEventListener('click', (e) => {
-    const anchor = e.target.closest('a[href]');
+document.addEventListener('click', (event) => {
+    const anchor = event.target.closest('a[href]');
     if (!anchor) return;
 
     const href = anchor.getAttribute('href');
     if (href && href.startsWith('/') && !href.startsWith('/api')) {
-        e.preventDefault();
+        event.preventDefault();
         navigateTo(href);
     }
 });
@@ -87,28 +87,67 @@ const ALLOWED_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
 
 function sanitizeHtml(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    const clean = document.createDocumentFragment();
+    const cleanFragment = document.createDocumentFragment();
 
-    function walk(sourceNode, targetParent) {
+    function walkNodes(sourceNode, targetParent) {
         for (const child of sourceNode.childNodes) {
             if (child.nodeType === Node.TEXT_NODE) {
                 targetParent.appendChild(document.createTextNode(child.textContent));
             } else if (child.nodeType === Node.ELEMENT_NODE && ALLOWED_TAGS.has(child.tagName)) {
-                const safe = document.createElement(child.tagName);
+                const safeElement = document.createElement(child.tagName);
                 if (child.tagName === 'A' && child.hasAttribute('href')) {
                     const href = child.getAttribute('href');
-                    if (/^https?:\/\//.test(href)) safe.setAttribute('href', href);
+                    if (/^https?:\/\//.test(href)) safeElement.setAttribute('href', href);
                 }
-                walk(child, safe);
-                targetParent.appendChild(safe);
+                walkNodes(child, safeElement);
+                targetParent.appendChild(safeElement);
             } else if (child.nodeType === Node.ELEMENT_NODE) {
-                walk(child, targetParent);
+                walkNodes(child, targetParent);
             }
         }
     }
 
-    walk(doc.body, clean);
-    return clean;
+    walkNodes(doc.body, cleanFragment);
+    return cleanFragment;
+}
+
+// --- Data Access ---
+
+async function fetchAllPosts() {
+    const response = await fetch('/api/posts');
+    if (!response.ok) return [];
+    return response.json();
+}
+
+async function fetchPostById(postId) {
+    const response = await fetch(`/api/posts/${postId}`);
+    if (!response.ok) return null;
+    return response.json();
+}
+
+async function fetchCommentsByPostId(postId) {
+    const response = await fetch(`/api/comments/${postId}`);
+    if (!response.ok) return [];
+    return response.json();
+}
+
+async function checkUrlSafety(urls) {
+    const response = await fetch('/api/validate-urls', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ urls })
+    });
+    return response.json();
+}
+
+async function submitComment(commentData) {
+    const response = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(commentData)
+    });
+    const body = await response.json();
+    return { ok: response.ok, body };
 }
 
 // --- Feedback ---
@@ -157,149 +196,139 @@ function createBlogCard(post) {
     return article;
 }
 
+function renderPostList(posts) {
+    const fragment = document.createDocumentFragment();
+    posts.forEach((post) => fragment.appendChild(createBlogCard(post)));
+    blogList.textContent = '';
+    blogList.appendChild(fragment);
+}
+
+function renderPostContent(post) {
+    fullPostContent.textContent = '';
+
+    const postBody = el('div');
+    postBody.appendChild(sanitizeHtml(post.content));
+
+    fullPostContent.append(
+        el('h2', null, post.title),
+        el('time', 'post-date', formatDate(post.createdAt)),
+        postBody
+    );
+}
+
+function renderCommentCard(comment) {
+    const card = el('div', 'comment-card');
+    const header = el('div', 'comment-header');
+    header.append(
+        el('strong', null, comment.name || 'Anonym'),
+        el('time', null, new Date(comment.createdAt).toLocaleString('da-DK'))
+    );
+    card.append(header, el('p', null, comment.content));
+    return card;
+}
+
+function renderCommentList(comments) {
+    commentsList.textContent = '';
+    const fragment = document.createDocumentFragment();
+    comments.forEach((comment) => fragment.appendChild(renderCommentCard(comment)));
+    commentsList.appendChild(fragment);
+}
+
+// --- Page Renderers ---
+
 async function renderHome() {
     showView('home');
     currentPostId = null;
 
     try {
-        const response = await fetch('/api/posts');
-        if (!response.ok) return;
-
-        const posts = await response.json();
-
-        // Build all cards in a fragment to trigger a single DOM reflow
-        const fragment = document.createDocumentFragment();
-        posts.forEach((post) => fragment.appendChild(createBlogCard(post)));
-
-        blogList.textContent = '';
-        blogList.appendChild(fragment);
-    } catch (err) {
-        console.error('Error loading posts:', err);
+        const posts = await fetchAllPosts();
+        renderPostList(posts);
+    } catch (error) {
+        console.error('Error loading posts:', error);
     }
 }
 
 async function renderPost(params) {
     showView('post');
     currentPostId = params.id;
+    setFeedback('', null);
 
     try {
-        const response = await fetch(`/api/posts/${params.id}`);
-        if (!response.ok) {
+        const post = await fetchPostById(params.id);
+        if (!post) {
             fullPostContent.textContent = 'Indlæg ikke fundet.';
             return;
         }
 
-        const post = await response.json();
-        fullPostContent.textContent = '';
+        renderPostContent(post);
 
-        const postBody = el('div');
-        postBody.appendChild(sanitizeHtml(post.content));
-
-        fullPostContent.append(
-            el('h2', null, post.title),
-            el('time', 'post-date', formatDate(post.createdAt)),
-            postBody
-        );
-
-        await loadComments(params.id);
-    } catch (err) {
-        console.error('Error loading post:', err);
+        const comments = await fetchCommentsByPostId(params.id);
+        renderCommentList(comments);
+    } catch (error) {
+        console.error('Error loading post:', error);
     }
-
-    setFeedback('', null);
-}
-
-// --- Comments ---
-
-async function loadComments(postId) {
-    commentsList.textContent = '';
-    try {
-        const response = await fetch(`/api/comments/${postId}`);
-        if (!response.ok) return;
-
-        const comments = await response.json();
-        const fragment = document.createDocumentFragment();
-        comments.forEach((comment) => fragment.appendChild(renderCommentEl(comment)));
-        commentsList.appendChild(fragment);
-    } catch (err) {
-        console.error('Error loading comments:', err);
-    }
-}
-
-function renderCommentEl(comment) {
-    const div = el('div', 'comment-card');
-    const header = el('div', 'comment-header');
-    header.append(
-        el('strong', null, comment.name || 'Anonym'),
-        el('time', null, new Date(comment.createdAt).toLocaleString('da-DK'))
-    );
-    div.append(header, el('p', null, comment.content));
-    return div;
 }
 
 // --- Comment Form Handling ---
 
-if (commentForm) {
-    commentForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+async function handleCommentSubmit(event) {
+    event.preventDefault();
 
-        if (!currentPostId) {
-            setFeedback('Fejl: Intet indlæg valgt.', 'error');
+    if (!currentPostId) {
+        setFeedback('Fejl: Intet indlæg valgt.', 'error');
+        return;
+    }
+
+    const authorName = document.getElementById('comment-author').value;
+    const commentText = document.getElementById('comment-text').value;
+    const email = document.getElementById('comment-email').value;
+    const subscribe = document.getElementById('comment-subscribe').checked;
+
+    const urls = extractUrls(commentText);
+    if (urls.length > 0) {
+        setFeedback('Tjekker URL-sikkerhed...', 'loading');
+        try {
+            const { results } = await checkUrlSafety(urls);
+            const unsafeUrls = results.filter((entry) => !entry.safe);
+            if (unsafeUrls.length > 0) {
+                const unsafeUrlNames = unsafeUrls.map((entry) => entry.url).join(', ');
+                setFeedback(`Usikre links fundet: ${unsafeUrlNames}`, 'error');
+                return;
+            }
+            setFeedback('URLs godkendt! Publicerer...', 'success');
+        } catch (error) {
+            setFeedback('Fejl ved URL-tjek. Prøv igen.', 'error');
+            return;
+        }
+    }
+
+    setFeedback('Publicerer din kommentar...', 'loading');
+
+    try {
+        const { ok, body: createdComment } = await submitComment({
+            postId: currentPostId,
+            name: authorName,
+            text: commentText,
+            email,
+            subscribe
+        });
+
+        if (!ok) {
+            setFeedback(createdComment.error || 'Noget gik galt. Prøv igen.', 'error');
             return;
         }
 
-        const name = document.getElementById('comment-author').value;
-        const text = document.getElementById('comment-text').value;
-        const email = document.getElementById('comment-email').value;
-        const subscribe = document.getElementById('comment-subscribe').checked;
+        setFeedback('Din kommentar er publiceret!', 'success');
+        commentsList.prepend(renderCommentCard(createdComment));
+        commentForm.reset();
+    } catch (error) {
+        setFeedback('Fejl: Kunne ikke kontakte serveren. Prøv igen senere.', 'error');
+        console.error('Comment submission error:', error);
+    }
+}
 
-        const urls = extractUrls(text);
-        if (urls.length > 0) {
-            setFeedback('Tjekker URL-sikkerhed...', 'loading');
-            try {
-                const checkResponse = await fetch('/api/validate-urls', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ urls })
-                });
-                const { results } = await checkResponse.json();
-                const unsafeUrls = results.filter((r) => !r.safe);
-                if (unsafeUrls.length > 0) {
-                    const names = unsafeUrls.map((r) => r.url).join(', ');
-                    setFeedback(`Usikre links fundet: ${names}`, 'error');
-                    return;
-                }
-                setFeedback('URLs godkendt! Publicerer...', 'success');
-            } catch (err) {
-                setFeedback('Fejl ved URL-tjek. Prøv igen.', 'error');
-                return;
-            }
-        }
-
-        setFeedback('Publicerer din kommentar...', 'loading');
-
-        try {
-            const response = await fetch('/api/comments', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ postId: currentPostId, name, text, email, subscribe })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setFeedback(data.error || 'Noget gik galt. Prøv igen.', 'error');
-                return;
-            }
-
-            setFeedback('Din kommentar er publiceret!', 'success');
-            commentsList.prepend(renderCommentEl(data));
-            commentForm.reset();
-        } catch (error) {
-            setFeedback('Fejl: Kunne ikke kontakte serveren. Prøv igen senere.', 'error');
-            console.error('Comment post error:', error);
-        }
-    });
+if (commentForm) {
+    commentForm.addEventListener('submit', handleCommentSubmit);
 }
 
 // --- Initial Load ---
