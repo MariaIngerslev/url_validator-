@@ -266,18 +266,24 @@ function createBlogCard(post) {
 
 function createHeroSection() {
     const section = el('div', 'hero');
-    const content = el('div', 'hero-content');
 
+    const textCol = el('div', 'hero-text');
     const heading = el('h1', 'hero-title', 'Idéer, kode & historier');
     const subheadline = el('p', 'hero-subtitle', 'En blog om kode, projekter og nysgerrighed.');
-
     const ctaButton = el('button', 'btn hero-cta', 'Læs indlæg');
     ctaButton.addEventListener('click', () => {
         navigateTo('/blogposts');
     });
+    textCol.append(heading, subheadline, ctaButton);
 
-    content.append(heading, subheadline, ctaButton);
-    section.append(content);
+    const imageCol = el('div', 'hero-image');
+    const sketchImg = el('img');
+    sketchImg.src = '/images/blog/index.png';
+    sketchImg.alt = '';
+    sketchImg.setAttribute('aria-hidden', 'true');
+    imageCol.appendChild(sketchImg);
+
+    section.append(textCol, imageCol);
     return section;
 }
 

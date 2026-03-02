@@ -7,18 +7,22 @@
 /* ----- 1. CSS Variables (Design Tokens) ----- */
 :root {
     /* Colors — warm parchment palette, minimal accent */
-    --color-bg:            #f2f0eb;      /* Medium's signature warm cream */
+    --color-bg:            #f2f0eb;      /* warm cream base */
     --color-surface:       #ffffff;
+    --color-white:         #ffffff;      /* explicit white for button/nav text */
     --color-text:          #242424;      /* near-black, not pure black */
     --color-text-muted:    #757575;
     --color-border:        #e0ddd6;      /* warm-tinted, barely-there */
+    --color-border-hover:  #c4c1ba;      /* slightly darker for hover / active states */
+    --color-border-strong: #9a9590;      /* strong borders & outline accents */
 
-    --color-primary:       #1a8917;      /* Medium green — tags & inline links */
+    --color-primary:       #1a8917;      /* green — tags & inline links */
     --color-primary-hover: #0f730c;
     --color-primary-light: #e8f5e8;
 
     --color-action:        #1a1a1a;      /* dark pill button fill */
     --color-action-hover:  #3d3d3d;
+    --color-action-active: #111111;
 
     --color-success:       #1a8917;
     --color-success-bg:    #e8f5e8;
@@ -32,9 +36,14 @@
     --color-error-bg:      #fef2f2;
     --color-error-border:  #f5c6c6;
 
+    --color-header-bg:     rgba(242, 240, 235, 0.92); /* frosted sticky header */
+    --color-sidebar-bg:    #d0c8c0;                   /* CV sidebar tint */
+
     /* Typography — editorial serif for content, grotesque for UI */
-    --font-sans:  'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --font-serif: Georgia, 'Book Antiqua', Palatino, serif;
+    --font-sans:         'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-serif:        Georgia, 'Book Antiqua', Palatino, serif;
+    --font-serif-display:"GT Super", Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono:         'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
 
     --font-size-xs:   0.6875rem;   /*  11px */
     --font-size-sm:   0.8125rem;   /*  13px */
@@ -42,9 +51,11 @@
     --font-size-lg:   1.125rem;    /*  18px */
     --font-size-xl:   1.375rem;    /*  22px */
     --font-size-2xl:  1.875rem;    /*  30px */
+    --font-size-3xl:  2.5rem;      /*  40px */
 
     --line-height:         1.6;
     --line-height-relaxed: 1.8;
+    --line-height-code:    1.7;
 
     /* Spacing */
     --space-xs:  0.25rem;
@@ -55,7 +66,7 @@
     --space-2xl: 3rem;
 
     /* Layout */
-    --max-width:      692px;       /* Medium's reading-column width */
+    --max-width:      692px;       /* comfortable reading column */
     --max-width-wide: 1192px;
     --header-height:  57px;
 
@@ -66,9 +77,10 @@
     --radius-xl:   8px;
     --radius-pill: 100px;          /* pill-shaped buttons */
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.07);
-    --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.09);
+    --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md:    0 2px 8px rgba(0, 0, 0, 0.07);
+    --shadow-lg:    0 4px 20px rgba(0, 0, 0, 0.09);
+    --shadow-focus: 0 0 0 2px rgba(36, 36, 36, 0.1); /* subtle focus ring */
 
     --transition: 130ms ease;
 }
@@ -168,7 +180,7 @@ body {
     top: 0;
     z-index: 100;
     height: var(--header-height);
-    background: rgba(242, 240, 235, 0.92); /* same warm cream as --color-bg */
+    background: var(--color-header-bg);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--color-border);
@@ -196,7 +208,7 @@ body {
 
 /* Serif logo — editorial masthead feel */
 .site-logo h1 {
-    font-family: "GT Super", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-family: var(--font-serif-display);
     font-size: var(--font-size-xl);
     font-weight: 500;
     color: var(--color-text);
@@ -249,16 +261,80 @@ body {
 }
 
 .nav-link--contact {
-    background: #1a1a1a;
-    color: #ffffff;
-    border-radius: 50px;
+    background: var(--color-action);
+    color: var(--color-white);
+    border-radius: var(--radius-pill);
     padding: 8px 16px;
     transition: background var(--transition), color var(--transition);
 }
 
 .nav-link--contact:hover {
     background: var(--color-action-hover);
-    color: #ffffff;
+    color: var(--color-white);
+}
+
+/* ----- 5b. Mobile Hamburger ----- */
+.nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.nav-hamburger span {
+    display: block;
+    width: 100%;
+    height: 1.5px;
+    background: var(--color-text);
+    border-radius: var(--radius-pill);
+    transition: transform var(--transition), opacity var(--transition);
+}
+
+/* Show hamburger only on small screens */
+@media (min-width: 540px) {
+    .nav-hamburger {
+        display: none;
+    }
+}
+
+/* Mobile nav panel — revealed when JS adds .is-open */
+@media (max-width: 539px) {
+    .header-nav {
+        display: none;
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        right: 0;
+        background: var(--color-bg);
+        border-bottom: 1px solid var(--color-border);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--space-lg) var(--space-xl);
+        gap: var(--space-lg);
+        z-index: 99;
+        box-shadow: var(--shadow-md);
+    }
+
+    .header-nav.is-open {
+        display: flex;
+    }
+
+    /* All links visible in the open panel */
+    .header-nav .nav-link:not(.nav-link--contact) {
+        display: inline;
+        font-size: var(--font-size-base);
+    }
+
+    .header-nav .nav-link--contact {
+        display: inline-block;
+    }
 }
 
 
@@ -302,58 +378,109 @@ body {
 /* ----- 6b. Hero Section ----- */
 .hero {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    min-height: 70vh;
-    padding: var(--space-2xl) var(--space-lg);
+    align-items: center;
+    gap: var(--space-xl);
+    min-height: calc(100vh - var(--header-height));
     margin-bottom: var(--space-2xl);
-    background: var(--color-bg);
+    overflow: hidden;
 }
 
-.hero-content {
-    max-width: 700px;
-    width: 100%;
+.hero-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-2xl) 0;
 }
 
 .hero-title {
-    font-family: "GT Super", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-family: var(--font-serif-display);
     font-size: clamp(4rem, 8vw, 6.5rem);
     font-weight: 400;
     letter-spacing: -0.03em;
     line-height: 1.05;
-    color: #191919;
+    color: var(--color-text);
     margin-bottom: var(--space-xl);
 }
 
 .hero-subtitle {
-    font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: var(--font-sans);
     font-size: 1.5rem;
     line-height: 1.4;
-    color: #242424;
+    color: var(--color-text);
     margin-top: 20px;
     margin-bottom: var(--space-xl);
 }
 
 /* Medium-style pill CTA */
 .hero-cta {
-    font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    align-self: flex-start;
+    font-family: var(--font-sans);
     font-size: 1.25rem;
     font-weight: 400;
-    background: #191919;
-    color: #ffffff;
+    background: var(--color-action);
+    color: var(--color-white);
     border: none;
-    border-radius: 9999px;
+    border-radius: var(--radius-pill);
     padding: 16px 32px 20px;
     transition: opacity var(--transition);
 }
 
 .hero-cta:hover {
     opacity: 0.8;
-    color: #ffffff;
+    color: var(--color-white);
 }
 
-@media (max-width: 600px) {
+.hero-image {
+    flex: 0 0 44%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    align-self: stretch;
+    /* Extend image flush to the right edge of .main-content */
+    margin-right: calc(-1 * var(--space-lg));
+}
+
+.hero-image img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    max-height: 85vh;
+    object-fit: contain;
+    object-position: right center;
+}
+
+/* Tablet: stack vertically, image below text */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: auto;
+        gap: var(--space-lg);
+        padding-bottom: var(--space-xl);
+    }
+
+    .hero-image {
+        align-self: auto;
+        flex: none;
+        width: 100%;
+        margin-right: 0;
+        justify-content: center;
+    }
+
+    .hero-image img {
+        max-height: 45vh;
+        width: auto;
+    }
+}
+
+/* Mobile: hide image, scale down text */
+@media (max-width: 480px) {
+    .hero-image {
+        display: none;
+    }
+
     .hero-title {
         font-size: clamp(2.5rem, 10vw, 4rem);
     }
@@ -398,7 +525,7 @@ body {
 }
 
 .blog-card:hover {
-    border-color: #c4c1ba;
+    border-color: var(--color-border-hover);
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
@@ -484,7 +611,7 @@ body {
 
 /* Primary: dark pill — "Start reading" / "Get started" Medium style */
 .btn-primary {
-    color: #ffffff;
+    color: var(--color-white);
     background: var(--color-action);
     letter-spacing: 0.01em;
 }
@@ -494,7 +621,7 @@ body {
 }
 
 .btn-primary:active {
-    background: #111111;
+    background: var(--color-action-active);
 }
 
 .btn-primary:focus-visible {
@@ -534,7 +661,7 @@ body {
 .btn-back:hover {
     background: var(--color-bg);
     color: var(--color-text);
-    border-color: #9a9590;
+    border-color: var(--color-border-strong);
     box-shadow: var(--shadow-sm);
 }
 
@@ -613,17 +740,40 @@ body {
     max-width: 100%;
     height: auto;
     margin: var(--space-xl) 0;
-    border-radius: 6px;
+    border-radius: var(--radius-lg);
 }
 
+/* Inline code — subtle tinted pill */
 .post-article code {
-    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    font-family: var(--font-mono);
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     padding: 0.15em 0.4em;
     font-size: 0.875em;
     color: var(--color-text);
+}
+
+/* Fenced code blocks — dark-inverted for contrast and scannability */
+.post-article pre {
+    font-family: var(--font-mono);
+    background: var(--color-text);
+    color: var(--color-bg);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    overflow-x: auto;
+    margin: var(--space-xl) 0;
+    line-height: var(--line-height-code);
+    -webkit-overflow-scrolling: touch;
+}
+
+.post-article pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: var(--font-size-sm);
+    color: inherit;
+    font-family: inherit;
 }
 
 /* Minimal blockquote — thin muted left rule */
@@ -639,6 +789,20 @@ body {
 .post-article strong {
     font-weight: 700;
     color: var(--color-text);
+}
+
+/* Inline links inside articles */
+.post-article a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--color-primary-light);
+    text-underline-offset: 0.2em;
+    transition: color var(--transition), text-decoration-color var(--transition);
+}
+
+.post-article a:hover {
+    color: var(--color-primary-hover);
+    text-decoration-color: var(--color-primary);
 }
 
 .section-divider {
@@ -668,7 +832,7 @@ body {
 }
 
 .comment-card:hover {
-    border-color: #c4c1ba;
+    border-color: var(--color-border-hover);
 }
 
 .comment-header {
@@ -735,7 +899,7 @@ body {
     font-size: var(--font-size-base);
     color: var(--color-text);
     background: var(--color-bg);
-    border: 1px solid #c4c1ba;
+    border: 1px solid var(--color-border-hover);
     border-radius: var(--radius-md);
     padding: 0.6875rem 0.875rem;
     appearance: none;
@@ -745,7 +909,7 @@ body {
 
 .form-input:hover,
 .form-textarea:hover {
-    border-color: #c4c1ba;
+    border-color: var(--color-border-hover);
 }
 
 /* Focus: near-black border, no coloured glow */
@@ -760,7 +924,7 @@ body {
 .form-textarea:focus-visible {
     outline: none;
     border-color: var(--color-text);
-    box-shadow: 0 0 0 2px rgba(36, 36, 36, 0.1);
+    box-shadow: var(--shadow-focus);
     background: var(--color-surface);
 }
 
@@ -864,14 +1028,14 @@ body {
 }
 
 
-/* ----- 14b. Contact View ----- */
+/* ----- 14a. Contact View ----- */
 .page-container {
     max-width: var(--max-width);
     margin: var(--space-2xl) auto 0;
 }
 
 .page-heading {
-    font-family: var(--font-serif);
+    font-family: var(--font-serif-display);
     font-size: var(--font-size-2xl);
     font-weight: 700;
     letter-spacing: -0.03em;
@@ -920,7 +1084,7 @@ a.contact-value:hover {
 }
 
 
-/* ----- 14c. CV View ----- */
+/* ----- 14b. CV View ----- */
 #view-cv {
     /* Cancel .main-content's horizontal padding so the cv-container can
        centre itself against the same viewport edges as .nav-container. */
@@ -940,12 +1104,12 @@ a.contact-value:hover {
 .cv-header {
     margin-bottom: var(--space-2xl);
     padding-bottom: var(--space-xl);
-    border-bottom: 1px solid #c4c1ba;
+    border-bottom: 1px solid var(--color-border-hover);
 }
 
 .cv-name {
-    font-family: var(--font-serif);
-    font-size: 2.5rem;
+    font-family: var(--font-serif-display);
+    font-size: var(--font-size-3xl);
     font-weight: 700;
     letter-spacing: -0.03em;
     color: var(--color-text);
@@ -975,7 +1139,7 @@ a.contact-value:hover {
     display: flex;
     flex-direction: column;
     gap: var(--space-xl);
-    background-color: #d0c8c0;
+    background-color: var(--color-sidebar-bg);
     padding: var(--space-lg);
 }
 
@@ -1079,8 +1243,7 @@ a.contact-value:hover {
 }
 
 
-
-/* ----- 14. Responsive Adjustments (Mobile-First) ----- */
+/* ----- 15. Responsive Adjustments (Mobile-First) ----- */
 @media (max-width: 600px) {
     :root {
         --font-size-2xl: 1.5rem;
