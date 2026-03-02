@@ -7,7 +7,7 @@
 /* ----- 1. CSS Variables (Design Tokens) ----- */
 :root {
     /* Colors — warm parchment palette, minimal accent */
-    --color-bg:            #e8e1d4;      /* warm cream base */
+    --color-bg:            #e7dfd1;      /* warm cream base */
     --color-surface:       #ffffff;
     --color-white:         #ffffff;      /* explicit white for button/nav text */
     --color-text:          #242424;      /* near-black, not pure black */
