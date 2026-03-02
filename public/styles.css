@@ -383,12 +383,22 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: border-color var(--transition), box-shadow var(--transition);
+    position: relative;
+    transition: border-color var(--transition), box-shadow var(--transition),
+                transform var(--transition);
 }
 
 .blog-card:hover {
     border-color: #c4c1ba;
     box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Stretched link — expands the "Læs mere" anchor to cover the whole card */
+.blog-card .read-more-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
 }
 
 .card-body {
@@ -515,7 +525,8 @@ body {
 .btn-back:hover {
     background: var(--color-bg);
     color: var(--color-text);
-    border-color: #c4c1ba;
+    border-color: #9a9590;
+    box-shadow: var(--shadow-sm);
 }
 
 .btn-back:focus-visible {
@@ -707,7 +718,7 @@ body {
     font-size: var(--font-size-base);
     color: var(--color-text);
     background: var(--color-bg);
-    border: 1px solid var(--color-border);
+    border: 1px solid #c4c1ba;
     border-radius: var(--radius-md);
     padding: 0.6875rem 0.875rem;
     appearance: none;
@@ -912,7 +923,7 @@ a.contact-value:hover {
 .cv-header {
     margin-bottom: var(--space-2xl);
     padding-bottom: var(--space-xl);
-    border-bottom: 2px solid var(--color-text);
+    border-bottom: 1px solid #c4c1ba;
 }
 
 .cv-name {
