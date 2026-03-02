@@ -193,6 +193,16 @@ async function submitComment(commentData) {
     return { ok: response.ok, body };
 }
 
+async function submitContactMessage(messageData) {
+    const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(messageData)
+    });
+    const body = await response.json();
+    return { ok: response.ok, body };
+}
+
 // --- Feedback ---
 
 const FEEDBACK_CLASSES = ['feedback-loading', 'feedback-success', 'feedback-warning', 'feedback-error'];
@@ -499,5 +509,64 @@ if (commentForm) {
     commentForm.addEventListener('submit', handleCommentSubmit);
 }
 
+// --- Contact Form Handling ---
+
+function setupContactForm() {
+    const contactForm = document.getElementById('contact-form');
+    if (!contactForm) return;
+
+    const errorsEl = document.getElementById('contact-form-errors');
+
+    function showContactError(message) {
+        errorsEl.classList.remove('form-errors--success');
+        errorsEl.textContent = '';
+        errorsEl.appendChild(el('p', null, message));
+    }
+
+    function clearContactError() {
+        errorsEl.classList.remove('form-errors--success');
+        errorsEl.textContent = '';
+    }
+
+    contactForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearContactError();
+
+        const firstName = document.getElementById('contact-first-name').value.trim();
+        const lastName  = document.getElementById('contact-last-name').value.trim();
+        const email     = document.getElementById('contact-email').value.trim();
+        const message   = document.getElementById('contact-message').value.trim();
+
+        if (!firstName || !lastName || !email || !message) {
+            showContactError('Udfyld venligst alle felter.');
+            return;
+        }
+
+        const submitButton = contactForm.querySelector('.btn-primary');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sender...';
+
+        try {
+            const { ok, body } = await submitContactMessage({ firstName, lastName, email, message });
+
+            if (!ok) {
+                showContactError(body.error || 'Noget gik galt. Prøv igen.');
+            } else {
+                contactForm.reset();
+                clearContactError();
+                errorsEl.classList.add('form-errors--success');
+                errorsEl.appendChild(el('p', null, 'Tak for din besked! Jeg vender tilbage hurtigst muligt.'));
+            }
+        } catch (error) {
+            showContactError('Fejl: Kunne ikke kontakte serveren. Prøv igen senere.');
+            console.error('Contact form submission error:', error);
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Send';
+        }
+    });
+}
+
 // --- Initial Load ---
+setupContactForm();
 navigateTo(window.location.pathname, false);

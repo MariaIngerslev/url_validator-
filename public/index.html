@@ -85,30 +85,40 @@
         </section>
         <!-- ===== CONTACT VIEW ===== -->
         <section id="view-contact" style="display: none;">
-            <div class="page-container">
-                <h2 class="page-heading">Kontakt</h2>
-                <ul class="contact-list">
-                    <li class="contact-item">
-                        <span class="contact-label">Mail</span>
-                        <a href="mailto:maria_ingerslev@hotmail.com" class="contact-value">maria_ingerslev@hotmail.com</a>
-                    </li>
-                    <li class="contact-item">
-                        <span class="contact-label">Telefon</span>
-                        <a href="tel:+4542529417" class="contact-value">+45 42 52 94 17</a>
-                    </li>
-                    <li class="contact-item">
-                        <span class="contact-label">Lokation</span>
-                        <span class="contact-value">Aarhus, DK</span>
-                    </li>
-                    <li class="contact-item">
-                        <span class="contact-label">LinkedIn</span>
-                        <a href="https://linkedin.com/in/maria-ingerslev" class="contact-value" target="_blank" rel="noopener noreferrer">linkedin.com/in/mariaingerslev</a>
-                    </li>
-                    <li class="contact-item">
-                        <span class="contact-label">GitHub</span>
-                        <a href="https://github.com/MariaIngerslev" class="contact-value" target="_blank" rel="noopener noreferrer">github.com/MariaIngerslev</a>
-                    </li>
-                </ul>
+            <div class="contact-layout">
+                <div class="contact-content">
+                    <h2 class="page-heading">Kontakt</h2>
+                    <p class="contact-intro">Har du spørgsmål eller et projekt i tankerne? Send mig en besked, og jeg vender tilbage hurtigst muligt.</p>
+                    <div class="contact-info">
+                        <a href="mailto:maria_ingerslev@hotmail.com">maria_ingerslev@hotmail.com</a>
+                        <a href="tel:+4542529417">+45 42 52 94 17</a>
+                    </div>
+                    <form id="contact-form" class="contact-form">
+                        <div class="contact-form-grid">
+                            <div class="form-group">
+                                <label for="contact-first-name" class="form-label">Fornavn</label>
+                                <input type="text" id="contact-first-name" class="form-input" placeholder="Dit fornavn" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-last-name" class="form-label">Efternavn</label>
+                                <input type="text" id="contact-last-name" class="form-input" placeholder="Dit efternavn" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-email" class="form-label">Email</label>
+                            <input type="email" id="contact-email" class="form-input" placeholder="Din email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-message" class="form-label">Besked</label>
+                            <textarea id="contact-message" class="form-textarea" placeholder="Din besked" rows="5" required></textarea>
+                        </div>
+                        <div id="contact-form-errors" class="form-errors"></div>
+                        <button type="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
+                <div class="contact-image-panel">
+                    <!-- TODO: replace background with an image -->
+                </div>
             </div>
         </section>
 

@@ -1029,6 +1029,12 @@ body {
     line-height: var(--line-height);
 }
 
+.form-errors.form-errors--success:not(:empty) {
+    background: var(--color-success-bg);
+    border-color: var(--color-success-border);
+    color: var(--color-success);
+}
+
 
 /* ----- 12. Feedback States ----- */
 .feedback {
@@ -1132,44 +1138,79 @@ body {
     margin-bottom: var(--space-xl);
 }
 
-.contact-list {
-    list-style: none;
+.contact-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - var(--header-height));
+}
+
+.contact-content {
+    flex: 0 0 50%;
+    padding: var(--space-2xl) var(--space-xl);
+    max-width: 560px;
+}
+
+.contact-intro {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    line-height: var(--line-height-relaxed);
+    margin-bottom: var(--space-xl);
+}
+
+.contact-info {
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
-}
-
-.contact-item {
-    display: flex;
-    align-items: baseline;
-    gap: var(--space-md);
-    padding-bottom: var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.contact-item:last-child {
-    border-bottom: none;
-}
-
-.contact-label {
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-xl);
+    font-size: var(--font-size-sm);
     color: var(--color-text-muted);
-    min-width: 90px;
-    flex-shrink: 0;
 }
 
-.contact-value {
-    font-size: var(--font-size-base);
-    color: var(--color-text);
+.contact-info a {
+    color: var(--color-text-muted);
     text-decoration: none;
 }
 
-a.contact-value:hover {
+.contact-info a:hover {
     color: var(--color-primary);
     text-decoration: underline;
+}
+
+.contact-form {
+    margin-top: var(--space-lg);
+}
+
+.contact-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+/* Warm-tinted placeholder panel — TODO: replace background-color with an image */
+.contact-image-panel {
+    flex: 1;
+    background-color: var(--color-sidebar-bg);
+}
+
+@media (max-width: 768px) {
+    .contact-layout {
+        flex-direction: column;
+    }
+
+    .contact-content {
+        flex: none;
+        max-width: 100%;
+    }
+
+    .contact-image-panel {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-form-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 

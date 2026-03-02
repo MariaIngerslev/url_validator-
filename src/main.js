@@ -8,6 +8,7 @@ const RALPH_LOOP_POST = require('./data/ralph-loop-post');
 const apiRoutes = require('./routes/api');
 const postsRoutes = require('./routes/posts');
 const commentsRoutes = require('./routes/comments');
+const messagesRoutes = require('./routes/messages');
 
 const app = express();
 const PORT = 3000;
@@ -26,6 +27,7 @@ app.use(express.json());
 app.use('/api', apiRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/comments', commentsRoutes);
+app.use('/api/messages', messagesRoutes);
 
 // SPA catch-all: serve index.html for any non-API route
 app.get('/{*path}', (req, res) => {
