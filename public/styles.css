@@ -608,6 +608,14 @@ body {
     margin-bottom: var(--space-xs);
 }
 
+.post-article img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: var(--space-xl) 0;
+    border-radius: 6px;
+}
+
 .post-article code {
     font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
     background: var(--color-bg);

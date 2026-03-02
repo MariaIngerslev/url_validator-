@@ -7,7 +7,9 @@
     "test": "jest",
     "start": "node src/main.js",
     "envlog": "node sandbox/envlog.js",
-    "lint": "npx eslint \"sandbox/**\" --fix"
+    "lint": "npx eslint \"sandbox/**\" --fix",
+    "update-first-post": "node scripts/update-first-post.js",
+    "update-ralph-loop-post": "node scripts/update-ralph-loop-post.js"
   },
   "keywords": [],
   "author": "",
