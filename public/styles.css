@@ -338,13 +338,13 @@ body {
 /* Medium-style pill CTA */
 .hero-cta {
     font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 400;
     background: #191919;
     color: #ffffff;
     border: none;
     border-radius: 9999px;
-    padding: 16px 32px;
+    padding: 16px 32px 20px;
     transition: opacity var(--transition);
 }
 
