@@ -22,7 +22,7 @@ const SEED_POST = {
 
 <p>En af de største udfordringer var at sikre kommentarfeltet. Jeg ville ikke bare tillade hvilke som helst links. Derfor har jeg bygget en custom <strong>URL Validator</strong>.</p>
 
-<p>Systemet bruger <em>Regular Expressions (Regex)</em> til at spotte links i teksten. Herefter sendes linket til min backend, som asynkront tjekker, om domænet er på en "blacklist" eller har et dårligt ry (simuleret via API-kald). Først når serveren siger "Godkendt", bliver kommentaren gemt. Det har lært mig utroligt meget om <code>async/await</code> og vigtigheden af "Server-side Validation".</p>
+<p>Systemet bruger <em>Regular Expressions (Regex)</em> til at spotte links i teksten. Herefter sendes linkene til min backend, som deterministisk validerer dem mod en <strong>Set-baseret sortliste</strong> og tjekker for mistænkelige nøgleord i URL'en. Et JavaScript <code>Set</code> giver O(1) opslag, hvilket er mere effektivt end at gennemgå et array. Først når serveren bekræfter, at alle links er sikre, bliver kommentaren gemt. Det har lært mig utroligt meget om <strong>server-side validering</strong> og vigtigheden af at holde forretningslogik på serveren.</p>
 
 <h2>4. Konklusion: Hvad har jeg lært?</h2>
 
