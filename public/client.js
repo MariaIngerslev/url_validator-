@@ -443,10 +443,10 @@ function renderCommentList(comments) {
 
 function createLoadingIndicator(message) {
     const wrapper = el('div', 'loading-indicator');
-    wrapper.append(
-        el('span', 'loading-spinner'),
-        el('span', 'loading-text', message)
-    );
+    wrapper.setAttribute('role', 'status');
+    const spinnerEl = el('span', 'loading-spinner');
+    spinnerEl.setAttribute('aria-hidden', 'true');
+    wrapper.append(spinnerEl, el('span', 'loading-text', message));
     return wrapper;
 }
 
@@ -471,6 +471,7 @@ async function renderBlogposts() {
         renderPostList(posts);
     } catch (error) {
         blogList.textContent = '';
+        blogList.appendChild(createLoadingIndicator('Kunne ikke hente indlæg. Prøv at genindlæse siden.'));
         console.error('Error loading posts:', error);
     }
 }
@@ -515,9 +516,9 @@ async function renderPost(params) {
 
 // --- Comment Form Helpers ---
 
-function setSubmitButtonBusy(button, busy) {
+function setSubmitButtonBusy(button, busy, label = 'Validerer...') {
     button.disabled = busy;
-    button.textContent = busy ? 'Validerer...' : 'Publicer';
+    button.textContent = busy ? label : 'Publicer';
 }
 
 function showFormError(message) {
@@ -565,6 +566,7 @@ async function handleCommentSubmit(event) {
         }
     }
 
+    setSubmitButtonBusy(submitButton, true, 'Sender...');
     try {
         const { ok, body: createdComment } = await submitComment({
             postId: currentPostId,
@@ -586,6 +588,7 @@ async function handleCommentSubmit(event) {
         const newCard = renderCommentCard(createdComment);
         newCard.classList.add('fade-in');
         commentsList.prepend(newCard);
+        newCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (error) {
         showFormError('Fejl: Kunne ikke kontakte serveren. Prøv igen senere.');
         setSubmitButtonBusy(submitButton, false);
@@ -644,6 +647,7 @@ function setupContactForm() {
                 clearContactError();
                 errorsEl.classList.add('form-errors--success');
                 errorsEl.appendChild(el('p', null, 'Tak for din besked! Jeg vender tilbage hurtigst muligt.'));
+                errorsEl.focus();
             }
         } catch (error) {
             showContactError('Fejl: Kunne ikke kontakte serveren. Prøv igen senere.');
