@@ -100,8 +100,6 @@ if (headerNav) {
     });
 }
 
-window.addEventListener('popstate', closeMobileMenu);
-
 // --- Shared Helpers ---
 
 const DATE_OPTIONS = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -109,7 +107,8 @@ const DATE_OPTIONS = { year: 'numeric', month: 'long', day: 'numeric' };
 const formatDate = (isoString) =>
     new Date(isoString).toLocaleDateString('da-DK', DATE_OPTIONS);
 
-const URL_PATTERN = /(https?:\/\/[^\s]+)/g;
+// Must stay in sync with src/utils/extractUrls.js
+const URL_PATTERN = /(https?:\/\/[^\s"'<>]*[^\s"'<>.,);!?])/g;
 
 const extractUrls = (text) => text.match(URL_PATTERN) || [];
 
@@ -180,6 +179,7 @@ async function checkUrlSafety(urls) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ urls })
     });
+    if (!response.ok) throw new Error('URL validation request failed');
     return response.json();
 }
 
@@ -450,8 +450,6 @@ async function handleCommentSubmit(event) {
 
     const authorName = document.getElementById('comment-author').value.trim();
     const commentText = document.getElementById('comment-text').value.trim();
-    const email = document.getElementById('comment-email').value.trim();
-    const subscribe = document.getElementById('comment-subscribe').checked;
 
     const submitButton = commentForm.querySelector('.btn-primary');
     clearFormError();
@@ -479,9 +477,7 @@ async function handleCommentSubmit(event) {
         const { ok, body: createdComment } = await submitComment({
             postId: currentPostId,
             name: authorName || undefined,
-            text: commentText,
-            email: email || undefined,
-            subscribe
+            text: commentText
         });
 
         if (!ok) {

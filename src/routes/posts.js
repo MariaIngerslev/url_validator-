@@ -29,9 +29,9 @@ router.get('/:id', validateObjectId('id'), async (req, res) => {
 router.post('/', async (req, res) => {
     const { title, content } = req.body;
 
-    if (!title || !content) {
+    if (typeof title !== 'string' || typeof content !== 'string' || !title.trim() || !content.trim()) {
         return res.status(400).json({
-            error: "Both 'title' and 'content' are required."
+            error: "Both 'title' and 'content' are required non-empty strings."
         });
     }
 
