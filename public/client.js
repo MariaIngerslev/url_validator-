@@ -1047,7 +1047,43 @@ function initSkillDeepDive() {
     }
 }
 
+// --- Dark Mode ---
+
+function initDarkMode() {
+    const toggleBtn = document.querySelector('.btn-theme-toggle');
+    if (!toggleBtn) return;
+
+    function applyTheme(isDark) {
+        if (isDark) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀';
+            toggleBtn.setAttribute('aria-label', 'Skift til lyst tema');
+            toggleBtn.setAttribute('aria-pressed', 'true');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            toggleBtn.textContent = '☾';
+            toggleBtn.setAttribute('aria-label', 'Skift til mørkt tema');
+            toggleBtn.setAttribute('aria-pressed', 'false');
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    applyTheme(savedTheme === 'dark');
+
+    toggleBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const nextIsDark = !isDark;
+        applyTheme(nextIsDark);
+        if (nextIsDark) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.removeItem('theme');
+        }
+    });
+}
+
 // --- Initial Load ---
+initDarkMode();
 setupContactForm();
 initSkillDeepDive();
 navigateTo(window.location.pathname, false);
