@@ -573,7 +573,7 @@ const SKILL_CONTENT = {
         title: 'Node.js / Express 5',
         file: 'src/routes/comments.js',
         language: 'javascript',
-        description: 'Express 5 videresender automatisk afviste promises fra async handlers til error-middlewaren — ingen try/catch boilerplate.',
+        description: 'Express 5 videresender automatisk afviste promises fra async handlers til error-middlewaren - ingen try/catch boilerplate.',
         code: `// Express 5: async errors propageres automatisk
 router.post('/', async (req, res) => {
     const { name, content, postId } = req.body;
@@ -595,7 +595,7 @@ router.post('/', async (req, res) => {
         title: 'Vanilla JavaScript (ES6+)',
         file: 'public/client.js',
         language: 'javascript',
-        description: 'SPA-router bygget med History API og pre-kompilerede regex-mønstre — ingen framework-afhængighed.',
+        description: 'SPA-router bygget med History API og pre-kompilerede regex-mønstre - ingen framework-afhængighed.',
         code: `// Pre-kompilér route-mønstre én gang ved opstart
 const routes = [
     { path: '/',          render: renderHome },
@@ -694,7 +694,7 @@ router.post('/validate-urls', async (req, res) => {
         title: 'XSS-forebyggelse',
         file: 'public/client.js',
         language: 'javascript',
-        description: 'DOMParser-baseret sanitizer med eksplicit allowlist. Al markup fra ikke-godkendte tags konverteres til plain text — script-injection er strukturelt umulig.',
+        description: 'DOMParser-baseret sanitizer med eksplicit allowlist. Al markup fra ikke-godkendte tags konverteres til plain text - script-injection er strukturelt umulig.',
         code: `const ALLOWED_TAGS = new Set([
     'P','H1','H2','H3','H4','H5','H6',
     'UL','OL','LI','STRONG','EM','CODE',
@@ -730,7 +730,7 @@ function sanitizeHtml(html) {
         title: 'Defensiv Programmering',
         file: 'src/middleware/validateObjectId.js',
         language: 'javascript',
-        description: 'Genanvendelig Express-middleware til MongoDB ObjectId-validering — én enkelt kilde til korrekthed på tværs af alle ruter.',
+        description: 'Genanvendelig Express-middleware til MongoDB ObjectId-validering - én enkelt kilde til korrekthed på tværs af alle ruter.',
         code: `const { isValidObjectId } = require('mongoose');
 
 // Brug: router.get('/:postId', validateObjectId('postId'), handler)
@@ -755,7 +755,7 @@ module.exports = validateObjectId;`,
         code: null,
     },
     git: {
-        title: 'Git — Conventional Commits',
+        title: 'Git - Conventional Commits',
         file: null,
         language: 'text',
         description: 'Struktureret commit-historik med Conventional Commits-standarden. Hvert commit følger mønsteret type(scope): beskrivelse for maskinel læsbarhed og klar historik.',
@@ -777,7 +777,7 @@ test(urlvalidator): tilføj dækning for case-insensitiv matchning`,
         title: 'ESLint 10',
         file: 'eslint.config.js',
         language: 'javascript',
-        description: 'Statisk kodeanalyse integreret i udviklingsworflowet — fanger potentielle fejl og håndhæver stil-konventioner før kode når review.',
+        description: 'Statisk kodeanalyse integreret i udviklingsworflowet - fanger potentielle fejl og håndhæver stil-konventioner før kode når review.',
         code: `import js from '@eslint/js';
 import globals from 'globals';
 
@@ -804,28 +804,28 @@ export default [
         title: 'Claude Code & AI Agents',
         file: null,
         language: 'text',
-        description: 'Daglig brug af AI-assisterede udviklingstools: Claude Code til arkitekturdrøftelser, kode-review og security-gennemgang. Menneskeligt tilsyn er altid afgørende — AI er et produktivitetsværktøj, ikke en erstatning for faglig dømmekraft.',
+        description: 'Daglig brug af AI-assisterede udviklingstools: Claude Code til arkitekturdrøftelser, kode-review og security-gennemgang. Menneskeligt tilsyn er altid afgørende - AI er et produktivitetsværktøj, ikke en erstatning for faglig dømmekraft.',
         code: null,
     },
     java: {
         title: 'Java / OOP',
         file: null,
         language: 'text',
-        description: 'Aktuel studie på Datamatiker-uddannelsen (Erhvervsakademi Aarhus, Jan 2026–). Fokus på objektorienteret design, arv, indkapsling og polymorfi — principper der allerede afspejles i JavaScript-koden: single responsibility, genanvendelige moduler og defensiv type-validering.',
+        description: 'Aktuel studie på Datamatiker-uddannelsen (Erhvervsakademi Aarhus, Jan 2026–). Fokus på objektorienteret design, arv, indkapsling og polymorfi - principper der allerede afspejles i JavaScript-koden: single responsibility, genanvendelige moduler og defensiv type-validering.',
         code: null,
     },
     'html-css': {
         title: 'HTML5 / CSS3',
         file: null,
         language: 'text',
-        description: 'Semantisk HTML5 og moderne CSS3 med custom properties, CSS Grid, Flexbox og mobile-first responsive design. Denne portfolio bruger udelukkende vanilla CSS — ingen frameworks, fuld kontrol over hvert pixel.',
+        description: 'Semantisk HTML5 og moderne CSS3 med custom properties, CSS Grid, Flexbox og mobile-first responsive design. Denne portfolio bruger udelukkende vanilla CSS - ingen frameworks, fuld kontrol over hvert pixel.',
         code: null,
     },
     languages: {
         title: 'Dansk / Engelsk',
         file: null,
         language: 'text',
-        description: 'Dansk modersmål med professionel skriftlig og mundtlig kommunikation. Engelsk på flydende niveau — al kode, teknisk dokumentation og professionelle diskussioner foregår på engelsk.',
+        description: 'Dansk modersmål med professionel skriftlig og mundtlig kommunikation. Engelsk på flydende niveau - al kode, teknisk dokumentation og professionelle diskussioner foregår på engelsk.',
         code: null,
     },
 };
