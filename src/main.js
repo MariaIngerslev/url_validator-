@@ -16,8 +16,9 @@ const PUBLIC_DIR = path.join(__dirname, '../public');
 
 async function seedPosts() {
     await Post.deleteMany({ title: "Sådan tæmmede jeg AI'en: The Ralph Loop" });
+    await Post.deleteMany({ title: 'The Ralph Wiggum Loop' });
     await Post.findOneAndUpdate({ title: SEED_POST.title }, SEED_POST, { upsert: true, new: true });
-    await Post.findOneAndUpdate({ title: 'The Ralph Wiggum Loop' }, RALPH_LOOP_POST, { upsert: true, new: true });
+    await Post.findOneAndUpdate({ title: RALPH_LOOP_POST.title }, RALPH_LOOP_POST, { upsert: true, new: true });
 }
 
 // Middleware
