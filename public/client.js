@@ -294,8 +294,8 @@ function createHeroSection() {
     const ideaSpan = el('span', 'hero-idea', 'Idéer,');
     heading.appendChild(ideaSpan);
     heading.appendChild(document.createTextNode(' kode & projekter'));
-    const subheadline = el('p', 'hero-subtitle', 'En blog med rod i solidt fullstack håndværk');
-    const ctaButton = el('button', 'btn hero-cta', 'Læs indlæg');
+    const subheadline = el('p', 'hero-subtitle reveal-hidden', 'En blog med rod i solidt fullstack håndværk');
+    const ctaButton = el('button', 'btn hero-cta reveal-hidden reveal-delay', 'Læs indlæg');
     ctaButton.addEventListener('click', () => {
         navigateTo('/blogposts');
     });
@@ -309,6 +309,23 @@ function createHeroSection() {
     imageCol.appendChild(sketchImg);
 
     section.append(textCol, imageCol);
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('reveal-visible');
+            // Remove reveal-hidden once the transition completes so the button's
+            // normal 200 ms hover transitions are restored.
+            entry.target.addEventListener('transitionend', () => {
+                entry.target.classList.remove('reveal-hidden', 'reveal-delay');
+            }, { once: true });
+            observer.unobserve(entry.target);
+        });
+    }, { threshold: 0.1 });
+
+    revealObserver.observe(subheadline);
+    revealObserver.observe(ctaButton);
+
     return section;
 }
 
