@@ -1368,10 +1368,8 @@ body {
 
 .om-mig-name {
     font-family: var(--font-serif-display);
-    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-size: var(--font-size-2xl);
     font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
     color: var(--color-text);
     text-align: center;
     margin: var(--space-md) 0;
