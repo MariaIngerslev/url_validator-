@@ -1275,7 +1275,7 @@ body {
 
 /* Name hero */
 .om-mig-hero {
-    padding: var(--space-xl) 0;
+    padding: 4rem 0 var(--space-xl);
 }
 
 .om-mig-rule {
@@ -1297,7 +1297,7 @@ body {
 
 /* Photo */
 .om-mig-photo-wrap {
-    margin-bottom: var(--space-2xl);
+    margin-bottom: 4rem;
 }
 
 .om-mig-photo {
@@ -1308,6 +1308,7 @@ body {
     object-position: top;
     min-height: 200px;
     background-color: var(--color-sidebar-bg);
+    border-radius: 12px;
 }
 
 /* Body sections */
@@ -1331,7 +1332,7 @@ body {
     padding-left: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: var(--space-md);
 }
 
 .om-mig-list li {
@@ -1353,6 +1354,7 @@ body {
     font-size: var(--font-size-base);
     line-height: 1.6;
     color: var(--color-text);
+    max-width: 850px;
 }
 
 .om-mig-section:first-child > p {
@@ -1545,7 +1547,8 @@ body {
 
     .skill-peek {
         display: block;
-        border-color: var(--color-border);
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         min-height: 180px;
     }
 
