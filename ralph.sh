@@ -19,11 +19,9 @@ while true; do
   echo "👉 Næste opgave: $TASK"
   echo "---------------------------------------------------"
 
-  # 2. EXECUTE TASK: Start en helt ny (stateless) session med Claude.
-  # Vi beder Claude om at læse opgaven og udføre ændringerne. 
-  # (Sørg for at tilpasse denne kommando til præcis den CLI, du bruger. 
-  # Hvis Claude Code beder om bekræftelse, skal du måske tilføje et flag for auto-accept).
-  claude "Udfør følgende opgave: '$TASK'. Brug CLAUDE.md som overordnet guide. Ret kun de filer, der er nødvendige for opgaven."
+  # 2. EXECUTE TASK: Start Claude med -y flaget.
+  # -y sørger for, at Claude accepterer ændringer automatisk og afslutter sessionen bagefter.
+  claude -y "Udfør følgende opgave: '$TASK'. Brug CLAUDE.md som overordnet guide. Ret kun de filer, der er nødvendige for opgaven."
 
   # 3. RUN TESTS: Kør dine Jest-tests fra npm
   echo "🧪 Kører tests for at validere ændringerne..."
@@ -36,15 +34,15 @@ while true; do
     exit 1
   fi
 
-  # 4. GIT COMMIT: Gem ændringerne i Git
-  echo "✅ Tests bestået. Committer ændringer..."
+  # 4. GIT COMMIT & PUSH: Gem ændringerne og send dem til GitHub/Render
+  echo "✅ Tests bestået. Committer og pusher ændringer..."
   git add .
-  git commit -m "feat(ai): $TASK"
+  git commit -m "Ralph Loop: $TASK"
+  git push
 
   # 5. STATE UPDATE: Fjern den fuldførte opgave fra TODO.md
-  # Dette gemmer resten af filen (fra linje 2 og ned) tilbage i TODO.md
   tail -n +2 "$TODO_FILE" > "$TODO_FILE.tmp" && mv "$TODO_FILE.tmp" "$TODO_FILE"
 
-  echo "🔄 Opgave fuldført. Gør klar til næste iteration..."
-  sleep 2 # En lille pause for at sikre, at filsystemet er med
+  echo "🔄 Opgave fuldført og pushed. Gør klar til næste iteration..."
+  sleep 2 
 done
