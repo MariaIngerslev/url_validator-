@@ -1,5 +1,5 @@
 const RALPH_LOOP_POST = {
-    title:     "Sådan tæmmede jeg AI'en: The Ralph Loop",
+    title:     "The Ralph Wiggum Loop",
     heroImage: '/images/blog/ralph_loop.jpg',
     content: `<img src="/images/blog/ralph_loop.jpg" alt="The Ralph Loop" />
 
@@ -11,7 +11,7 @@ const RALPH_LOOP_POST = {
 
 <h2>2. Konceptet: Hvad er The Ralph Loop?</h2>
 
-<p>Løsningen blev et koncept, jeg kalder <strong>The Ralph Loop</strong>. I bund og grund er det et <em>stateless agent loop</em>.</p>
+<p>Løsningen blev et koncept: <strong>The Ralph Loop</strong>. I bund og grund er det et <em>stateless agent loop</em>.</p>
 
 <p>For at bruge en simpel analogi: Forestil dig en person, der lider af korttidshukommelsestab (ligesom i filmen <em>Memento</em>). Hver gang de skal løse en opgave, må de læse deres noter for at forstå, hvor de er, udføre opgaven, skrive resultatet ned, og derefter "glemme" alt igen for at undgå at blande tingene sammen.</p>
 
