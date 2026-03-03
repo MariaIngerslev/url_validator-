@@ -1418,7 +1418,7 @@ body {
 
 .om-mig-hero-text p {
     font-family: var(--font-serif);
-    font-size: 1rem;
+    font-size: var(--font-size-lg);
     line-height: 1.7;
     color: var(--color-text);
     max-width: 70ch;
@@ -1453,10 +1453,11 @@ body {
 
 .om-mig-section-title {
     font-family: var(--font-sans);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
+    line-height: 1.2;
     font-weight: 700;
     color: var(--color-text);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
 }
 
 .om-mig-list {
@@ -1464,7 +1465,7 @@ body {
     padding-left: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-xl);
+    gap: var(--space-2xl);
 }
 
 .om-mig-list li {
@@ -1595,6 +1596,10 @@ body {
 
 .skill-peek-inner {
     min-height: 0;
+    transition: opacity 160ms ease;
+}
+.skill-peek-inner.is-fading {
+    opacity: 0;
 }
 
 .skill-peek-placeholder {

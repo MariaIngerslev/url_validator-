@@ -1014,7 +1014,11 @@ function initSkillDeepDive() {
         if (skill === activeSkill) {
             chip.classList.remove('is-active');
             activeSkill = null;
-            showPlaceholder();
+            peekInner.classList.add('is-fading');
+            setTimeout(() => {
+                showPlaceholder();
+                peekInner.classList.remove('is-fading');
+            }, 160);
             return;
         }
 
@@ -1025,10 +1029,22 @@ function initSkillDeepDive() {
         const content = SKILL_CONTENT[skill];
         if (!content) return;
 
-        peekInner.textContent = '';
-        peekInner.appendChild(buildPeekContent(content));
-        activeSkill = skill;
+        peekInner.classList.add('is-fading');
+        setTimeout(() => {
+            peekInner.textContent = '';
+            peekInner.appendChild(buildPeekContent(content));
+            activeSkill = skill;
+            peekInner.classList.remove('is-fading');
+        }, 160);
     });
+
+    const defaultChip = categoriesEl.querySelector('[data-skill="express"]');
+    if (defaultChip) {
+        defaultChip.classList.add('is-active');
+        activeSkill = 'express';
+        peekInner.textContent = '';
+        peekInner.appendChild(buildPeekContent(SKILL_CONTENT['express']));
+    }
 }
 
 // --- Initial Load ---
