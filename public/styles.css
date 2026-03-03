@@ -1669,19 +1669,12 @@ body {
 /* Desktop: side-by-side layout, peek always visible */
 @media (min-width: 760px) {
     .om-mig-hero {
-        grid-template-columns: 1fr 380px;
+        grid-template-columns: 1fr 460px;
         gap: var(--space-xl);
     }
 
     .skill-deep-dive {
-        grid-template-columns: 1fr 380px;
-        align-items: start;
-    }
-
-    .skill-categories {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--space-lg) var(--space-xl);
+        grid-template-columns: 1fr 460px;
         align-items: start;
     }
 
