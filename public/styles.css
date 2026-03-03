@@ -1082,7 +1082,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: var(--space-xl) var(--space-lg);
+    padding: var(--space-xl) var(--space-2xl) var(--space-xl) var(--space-lg);
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
     border-top: 1px solid var(--color-border);
@@ -1103,7 +1103,7 @@ body {
 
 .footer-columns {
     display: flex;
-    gap: var(--space-xl);
+    gap: var(--space-2xl);
 }
 
 .footer-col-heading {
