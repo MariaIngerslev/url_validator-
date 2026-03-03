@@ -1671,55 +1671,24 @@ body {
 .hl-comment { color: #75715e; font-style: italic; }
 .hl-number  { color: #ae81ff; }
 
-/* Desktop: side-by-side layout, peek always visible */
+/* Desktop: hero side-by-side, skill section stays single-column */
 @media (min-width: 760px) {
     .om-mig-hero {
         grid-template-columns: 1fr 460px;
         gap: var(--space-xl);
     }
 
-    .skill-deep-dive {
-        grid-template-columns: 1fr 460px;
-        align-items: center;
-    }
-
     .skill-peek {
-        display: flex;
-        flex-direction: column;
-        height: 400px;
-        overflow: hidden;
-        border: 1px solid var(--color-border);
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     }
 
-    .skill-peek-inner {
-        overflow: hidden;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .skill-peek-placeholder {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 0 var(--space-lg);
-    }
-
     .code-preview-wrap {
-        flex: 1;
         overflow: hidden;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
         margin-bottom: var(--space-md);
     }
 
     .skill-peek-code-block {
-        flex: 1;
-        min-height: 0;
+        max-height: 380px;
         overflow-y: auto;
         overflow-x: auto;
     }
