@@ -46,7 +46,8 @@ router.post('/', async (req, res) => {
     }
 
     const sanitizedName = (typeof name === 'string' && name.trim() !== '') ? name : undefined;
-    const comment = await Comment.create({ name: sanitizedName, content: text, postId });
+    const strippedText = text.replace(/<[^>]*>/g, '');
+    const comment = await Comment.create({ name: sanitizedName, content: strippedText, postId });
     res.status(201).json(comment);
 });
 

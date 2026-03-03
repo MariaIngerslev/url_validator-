@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const Post = require('./models/Post');
 const SEED_POST = require('./data/seed');
 const RALPH_LOOP_POST = require('./data/ralph-loop-post');
@@ -21,6 +23,40 @@ async function seedPosts() {
     await Post.findOneAndUpdate({ title: RALPH_LOOP_POST.title }, RALPH_LOOP_POST, { upsert: true, new: true });
 }
 
+// Security headers
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc:     ["'self'"],
+            scriptSrc:      ["'self'"],
+            styleSrc:       ["'self'", "'unsafe-inline'"],
+            imgSrc:         ["'self'", "https:"],
+            connectSrc:     ["'self'"],
+            fontSrc:        ["'self'"],
+            objectSrc:      ["'none'"],
+            frameAncestors: ["'none'"],
+            baseUri:        ["'self'"],
+            formAction:     ["'self'"],
+        },
+    },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+}));
+
+// Reject cross-origin mutation requests (CSRF protection for cookie-less API)
+app.use('/api', (req, res, next) => {
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+        const origin = req.get('Origin') || req.get('Referer') || '';
+        if (origin && !origin.startsWith(`http://localhost:${PORT}`)) {
+            return res.status(403).json({ error: 'Forbidden: cross-origin mutation not allowed.' });
+        }
+    }
+    next();
+});
+
+// Rate limiting
+const commentLimiter = rateLimit({ windowMs: 60_000, max: 10, standardHeaders: true, legacyHeaders: false });
+const messageLimiter = rateLimit({ windowMs: 60_000, max: 5,  standardHeaders: true, legacyHeaders: false });
+
 // Middleware
 app.use(express.static(PUBLIC_DIR));
 app.use(express.json());
@@ -28,8 +64,8 @@ app.use(express.json());
 // API routes
 app.use('/api', apiRoutes);
 app.use('/api/posts', postsRoutes);
-app.use('/api/comments', commentsRoutes);
-app.use('/api/messages', messagesRoutes);
+app.use('/api/comments', commentLimiter, commentsRoutes);
+app.use('/api/messages', messageLimiter, messagesRoutes);
 
 // SPA catch-all: serve index.html for any non-API route
 app.get('/{*path}', (req, res) => {

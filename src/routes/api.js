@@ -7,9 +7,10 @@ const router = express.Router();
 router.post('/validate-urls', (req, res) => {
     const { urls } = req.body;
 
-    if (!urls || !Array.isArray(urls) || urls.length === 0) {
+    if (!urls || !Array.isArray(urls) || urls.length === 0
+        || !urls.every((u) => typeof u === 'string')) {
         return res.status(400).json({
-            error: "Request body must include a non-empty 'urls' array."
+            error: "Request body must include a non-empty 'urls' array of strings."
         });
     }
 
