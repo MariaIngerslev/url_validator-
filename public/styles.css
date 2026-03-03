@@ -1334,6 +1334,22 @@ body {
     flex: 1;
 }
 
+.contact-form .btn-primary {
+    background: var(--color-cta-dark);
+}
+
+.contact-form .btn-primary:hover {
+    background: var(--color-cta-dark-hover);
+}
+
+.contact-form .btn-primary:active {
+    background: var(--color-cta-dark);
+}
+
+.contact-form .btn-primary:focus-visible {
+    outline-color: var(--color-cta-dark);
+}
+
 .contact-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
