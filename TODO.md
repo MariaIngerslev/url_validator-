@@ -1,4 +1,3 @@
-Double the size of the "Læs indlæg" button on the home page
 Change the heading on the "Om mig" page from "Maria Ingerslev" to "Om mig"
 Update the claude.md file with latest project instructions
 Perform a thorough investigation and refactor of technical debt in the codebase
