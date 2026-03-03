@@ -119,26 +119,48 @@ const el = (tag, className, textContent) => {
     return element;
 };
 
-// Wraps each character of text in a .slice-char span with individual
-// animation delays and durations, producing a letter-by-letter slice-in effect.
-function animateChars(text, startDelay, charStep) {
-    const fragment = document.createDocumentFragment();
-    [...text].forEach((char, i) => {
-        if (char === ' ') {
-            fragment.appendChild(document.createTextNode(' '));
+// Returns a randomized inter-character delay (ms) to simulate human typing rhythm.
+function humanTypeDelay(char) {
+    const base = 45 + Math.random() * 65;           // 45–110ms base range
+    if (char === '&') return base + 55;              // natural pause at the symbol
+    if (Math.random() < 0.08) return base + 140 + Math.random() * 100; // rare stutter
+    return base;
+}
+
+// Sequences the hero entrance: typewriter on the heading, then whole-element
+// slide-up reveals for the subtitle and CTA button.
+function startHeroAnimation(typedChars, cursor, subtitle, ctaButton) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        typedChars.forEach(span => span.classList.add('is-typed'));
+        subtitle.classList.add('is-animating');
+        ctaButton.classList.add('is-animating');
+        return;
+    }
+
+    let i = 0;
+
+    function typeNextChar() {
+        if (i >= typedChars.length) {
+            // Typing complete — show cursor, reveal subtitle, then CTA.
+            cursor.classList.add('is-visible');
+            subtitle.classList.add('is-animating');
+            setTimeout(() => ctaButton.classList.add('is-animating'), 300);
+            // Replace blink with a smooth fade-out after 1 second.
+            setTimeout(() => {
+                cursor.style.animation = 'none';
+                void cursor.offsetHeight; // flush: establish opacity before transitioning
+                cursor.style.transition = 'opacity 0.5s ease';
+                cursor.style.opacity = '0';
+            }, 1000);
             return;
         }
-        const span = document.createElement('span');
-        span.className = 'slice-char';
-        span.textContent = char;
-        const jitter = Math.round(Math.random() * 30) - 15;
-        const delay = Math.max(0, startDelay + i * charStep + jitter);
-        const dur = 500 + Math.floor(Math.random() * 400);
-        span.style.animationDelay = `${delay}ms`;
-        span.style.animationDuration = `${dur}ms`;
-        fragment.appendChild(span);
-    });
-    return fragment;
+
+        typedChars[i].classList.add('is-typed');
+        i++;
+        setTimeout(typeNextChar, humanTypeDelay(typedChars[i - 1].textContent));
+    }
+
+    typeNextChar();
 }
 
 const ALLOWED_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
@@ -311,32 +333,68 @@ function createBlogCard(post) {
 function createHeroSection() {
     const section = el('div', 'hero');
 
-    const textCol = el('div', 'hero-text');
+    // --- Heading ---
+    // aria-label provides the full text for screen readers; animated children are aria-hidden.
     const heading = el('h1', 'hero-title');
+    heading.setAttribute('aria-label', 'Idéer, kode & projekter');
+
     const ideaSpan = el('span', 'hero-idea', 'Idéer,');
+    ideaSpan.setAttribute('aria-hidden', 'true');
     heading.appendChild(ideaSpan);
-    heading.appendChild(animateChars(' kode & projekter', 80, 60));
+    heading.appendChild(document.createTextNode(' '));
 
-    const subheadline = el('p', 'hero-subtitle');
-    subheadline.appendChild(animateChars('En blog med rod i solidt fullstack håndværk', 350, 25));
+    // Build the typewriter target: non-space chars become individually-revealable spans;
+    // spaces are text nodes so layout (word breaks) works from the start.
+    const typedContainer = document.createElement('span');
+    typedContainer.setAttribute('aria-hidden', 'true');
+    const typedChars = [];
+    for (const char of 'kode & projekter') {
+        if (char === ' ') {
+            typedContainer.appendChild(document.createTextNode(' '));
+        } else {
+            const span = document.createElement('span');
+            span.className = 'hero-typechar';
+            span.textContent = char;
+            typedContainer.appendChild(span);
+            typedChars.push(span);
+        }
+    }
+    heading.appendChild(typedContainer);
 
-    const ctaButton = el('button', 'btn hero-cta');
-    const ctaLabel = document.createElement('span');
-    ctaLabel.appendChild(animateChars('Læs indlæg', 700, 50));
-    ctaButton.appendChild(ctaLabel);
+    // Cursor: appears after the last character is typed, then fades out.
+    const cursor = document.createElement('span');
+    cursor.className = 'hero-cursor';
+    cursor.setAttribute('aria-hidden', 'true');
+    heading.appendChild(cursor);
+
+    // --- Subtitle & CTA (initially hidden; revealed by startHeroAnimation) ---
+    const subheadline = el('p', 'hero-subtitle', 'En blog med rod i solidt fullstack håndværk');
+
+    const ctaButton = el('button', 'btn hero-cta', 'Læs indlæg');
     ctaButton.addEventListener('click', () => {
         navigateTo('/blogposts');
     });
+
+    const textCol = el('div', 'hero-text');
     textCol.append(heading, subheadline, ctaButton);
 
-    const imageCol = el('div', 'hero-image');
+    // --- Image ---
     const sketchImg = el('img');
     sketchImg.src = '/images/blog/index.png';
     sketchImg.alt = '';
     sketchImg.setAttribute('aria-hidden', 'true');
+    const imageCol = el('div', 'hero-image');
     imageCol.appendChild(sketchImg);
 
     section.append(textCol, imageCol);
+
+    // --- Intersection Observer: start the sequence once the hero is in view ---
+    const observer = new IntersectionObserver((entries, obs) => {
+        if (!entries[0].isIntersecting) return;
+        obs.disconnect();
+        startHeroAnimation(typedChars, cursor, subheadline, ctaButton);
+    }, { threshold: 0.1 });
+    observer.observe(section);
 
     return section;
 }

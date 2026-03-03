@@ -416,17 +416,81 @@ body {
     color: var(--color-primary);
 }
 
-/* ----- Slice-in animation ----- */
-@keyframes slice-in {
-    from { clip-path: inset(0 100% 0 0); }
-    to   { clip-path: inset(0 0% 0 0); }
-}
+/* ----- Hero entrance animation ----- */
 
-.slice-char {
+/* Typewriter characters: invisible but occupy layout space until revealed */
+.hero-typechar {
     display: inline-block;
     vertical-align: baseline;
-    animation: slice-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-    /* animation-delay and animation-duration are set inline per character */
+    visibility: hidden;
+}
+
+.hero-typechar.is-typed {
+    visibility: visible;
+}
+
+/* Blinking cursor appended after the last typed character */
+@keyframes hero-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+
+.hero-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 0.82em;
+    background: var(--color-text);
+    vertical-align: -0.06em;
+    margin-left: 1px;
+    border-radius: 1px;
+    opacity: 0;
+}
+
+.hero-cursor.is-visible {
+    animation: hero-cursor-blink 0.85s step-end infinite;
+    opacity: 1;
+}
+
+/* Subtitle: slide up and fade in as a whole element */
+@keyframes hero-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* CTA: same motion with a spring overshoot for a subtle bounce landing */
+@keyframes hero-cta-in {
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-subtitle.is-animating {
+    animation: hero-slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.btn.hero-cta.is-animating {
+    animation: hero-cta-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Reduced motion: show everything immediately, skip all entrance effects */
+@media (prefers-reduced-motion: reduce) {
+    .hero-typechar              { visibility: visible; }
+    .hero-cursor                { display: none; }
+    .hero-subtitle,
+    .hero-subtitle.is-animating { opacity: 1 !important; transform: none !important; animation: none !important; }
+    .btn.hero-cta,
+    .btn.hero-cta.is-animating  { opacity: 1 !important; transform: none !important; animation: none !important; }
 }
 
 .hero-subtitle {
@@ -436,6 +500,8 @@ body {
     color: var(--color-text);
     margin-top: 20px;
     margin-bottom: var(--space-xl);
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 /* Primary hero CTA - compound selector beats .btn cascade for font/padding overrides */
@@ -448,6 +514,8 @@ body {
     padding: 0.625rem 1.125rem;        /* tighter than before; 10px 18px */
     border-radius: 10px;               /* refined rectangle instead of full pill */
     transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+    opacity: 0;
+    transform: translateY(28px);
 }
 
 .btn.hero-cta:hover {
