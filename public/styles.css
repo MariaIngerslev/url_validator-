@@ -1355,7 +1355,7 @@ body {
     color: var(--color-text);
 }
 
-.om-mig-section:first-child > p:first-of-type {
+.om-mig-section:first-child > p {
     font-size: 1.125rem;
 }
 
