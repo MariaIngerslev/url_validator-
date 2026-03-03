@@ -1365,6 +1365,9 @@ body {
         grid-template-columns: 1fr;
         gap: var(--space-xl);
     }
+    .skill-categories {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1497,8 +1500,8 @@ body {
 }
 
 .skill-categories {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-lg);
 }
 
@@ -1569,20 +1572,13 @@ body {
 /* Code Peek Panel */
 
 .skill-peek {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 300ms ease-in-out;
     border-radius: 12px;
     background: rgba(231, 223, 209, 0.55);
     border: 1.5px solid var(--color-border);
 }
 
-.skill-peek.is-open {
-    grid-template-rows: 1fr;
-}
-
 .skill-peek-inner {
-    overflow: hidden;
+    min-height: 0;
 }
 
 .skill-peek-placeholder {

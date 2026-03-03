@@ -1013,7 +1013,6 @@ function initSkillDeepDive() {
 
         if (skill === activeSkill) {
             chip.classList.remove('is-active');
-            peekEl.classList.remove('is-open');
             activeSkill = null;
             showPlaceholder();
             return;
@@ -1028,7 +1027,6 @@ function initSkillDeepDive() {
 
         peekInner.textContent = '';
         peekInner.appendChild(buildPeekContent(content));
-        peekEl.classList.add('is-open');
         activeSkill = skill;
     });
 }
