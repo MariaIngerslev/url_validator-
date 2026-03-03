@@ -6,6 +6,7 @@
     <title>Maria's Dev Portfolio</title>
     <link rel="stylesheet" href="styles.css?v=5">
     <script src="client.js" defer></script>
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
     <header class="site-header">
@@ -13,16 +14,19 @@
             <a href="/" class="site-logo">
                 <h1>Maria Ingerslev</h1>
             </a>
-            <button class="nav-hamburger" aria-label="Åbn navigation" aria-expanded="false">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <nav class="header-nav">
-                <a href="/blogposts" class="nav-link">Blogindlæg</a>
-                <a href="/cv" class="nav-link">Om mig</a>
-                <a href="/contact" class="nav-link nav-link--contact">Kontakt</a>
-            </nav>
+            <div class="nav-actions">
+                <button class="btn-theme-toggle" aria-label="Skift til mørkt tema">☾</button>
+                <button class="nav-hamburger" aria-label="Åbn navigation" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <nav class="header-nav">
+                    <a href="/blogposts" class="nav-link">Blogindlæg</a>
+                    <a href="/cv" class="nav-link">Om mig</a>
+                    <a href="/contact" class="nav-link nav-link--contact">Kontakt</a>
+                </nav>
+            </div>
         </nav>
     </header>
 
