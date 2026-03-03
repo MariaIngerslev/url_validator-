@@ -847,59 +847,6 @@ module.exports = validateObjectId;`,
         description: 'Al kode skrives med dokumentation in mente: intentionsafslørede navne, en CLAUDE.md der fungerer som levende arkitekturbeskrivelse og commit-beskeder der forklarer "hvorfor" frem for "hvad". Kode skal være teamklar fra dag ét.',
         code: null,
     },
-    git: {
-        title: 'Git - Conventional Commits',
-        file: null,
-        language: 'text',
-        description: 'Struktureret commit-historik med Conventional Commits-standarden. Hvert commit følger mønsteret type(scope): beskrivelse for maskinel læsbarhed og klar historik.',
-        code: `feat(comments): tilføj URL-sikkerhedstjek ved indsendelse
-fix(api): afvis ikke-array urls payload med 400 Bad Request
-refactor(routes): udtrk validateObjectId til genanvendelig middleware
-chore(deps): opgradér Express til 5.1.0
-docs(readme): tilføj arkitekturoversigt og portfolio-sammendrag
-test(urlvalidator): tilføj dækning for case-insensitiv matchning`,
-    },
-    agile: {
-        title: 'Jira / Agile Workflows',
-        file: null,
-        language: 'text',
-        description: 'Erfaring med agile arbejdsmetoder fra The Odin Project og Datamatiker-studiet: sprint planning, backlog refinement og definition of done. Vant til at strukturere arbejde i epics, user stories og tasks med tydelig accept-kriterie.',
-        code: null,
-    },
-    eslint: {
-        title: 'ESLint 10',
-        file: 'eslint.config.js',
-        language: 'javascript',
-        description: 'Statisk kodeanalyse integreret i udviklingsworflowet - fanger potentielle fejl og håndhæver stil-konventioner før kode når review.',
-        code: `import js from '@eslint/js';
-import globals from 'globals';
-
-export default [
-    js.configs.recommended,
-    {
-        languageOptions: {
-            ecmaVersion: 2022,
-            globals: {
-                ...globals.node,
-                ...globals.browser,
-            },
-        },
-        rules: {
-            'no-unused-vars':      'warn',
-            'eqeqeq':             'error',
-            'no-implicit-globals': 'error',
-            'no-eval':             'error',
-        },
-    },
-];`,
-    },
-    'ai-agents': {
-        title: 'Claude Code & AI Agents',
-        file: null,
-        language: 'text',
-        description: 'Daglig brug af AI-assisterede udviklingstools: Claude Code til arkitekturdrøftelser, kode-review og security-gennemgang. Menneskeligt tilsyn er altid afgørende - AI er et produktivitetsværktøj, ikke en erstatning for faglig dømmekraft.',
-        code: null,
-    },
     java: {
         title: 'Java / OOP',
         file: null,
@@ -912,13 +859,6 @@ export default [
         file: null,
         language: 'text',
         description: 'Semantisk HTML5 og moderne CSS3 med custom properties, CSS Grid, Flexbox og mobile-first responsive design. Denne portfolio bruger udelukkende vanilla CSS - ingen frameworks, fuld kontrol over hvert pixel.',
-        code: null,
-    },
-    languages: {
-        title: 'Dansk / Engelsk',
-        file: null,
-        language: 'text',
-        description: 'Dansk modersmål med professionel skriftlig og mundtlig kommunikation. Engelsk på flydende niveau - al kode, teknisk dokumentation og professionelle diskussioner foregår på engelsk.',
         code: null,
     },
 };
