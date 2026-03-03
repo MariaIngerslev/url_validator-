@@ -416,6 +416,18 @@ body {
     color: var(--color-primary);
 }
 
+/* ----- Slice-in animation ----- */
+@keyframes slice-in {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0% 0 0); }
+}
+
+.slice-char {
+    display: inline-block;
+    animation: slice-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    /* animation-delay and animation-duration are set inline per character */
+}
+
 .hero-subtitle {
     font-family: var(--font-sans);
     font-size: 1.5rem;
@@ -462,39 +474,6 @@ body {
     transform: translateX(3px);
 }
 
-/* ----- Reveal-on-scroll animation ----- */
-.reveal-hidden {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reveal-visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.reveal-delay {
-    transition-delay: 200ms;
-}
-
-/*
- * Override the CTA button's transition during reveal so that opacity
- * and transform both animate at 0.8 s (beats .btn.hero-cta at 0,2,0
- * with specificity 0,3,0). background/box-shadow keep their own durations.
- */
-.btn.hero-cta.reveal-hidden {
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                background 200ms ease,
-                box-shadow 200ms ease;
-}
-
-/* Apply the 200 ms stagger delay to the CTA (specificity 0,4,0 beats above) */
-.btn.hero-cta.reveal-hidden.reveal-delay {
-    transition-delay: 200ms;
-}
 
 .hero-image {
     flex: 0 0 44%;

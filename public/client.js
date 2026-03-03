@@ -119,6 +119,24 @@ const el = (tag, className, textContent) => {
     return element;
 };
 
+// Wraps each character of text in a .slice-char span with individual
+// animation delays and durations, producing a letter-by-letter slice-in effect.
+function animateChars(text, startDelay, charStep) {
+    const fragment = document.createDocumentFragment();
+    [...text].forEach((char, i) => {
+        const span = document.createElement('span');
+        span.className = 'slice-char';
+        span.textContent = char;
+        const jitter = Math.round(Math.random() * 30) - 15;
+        const delay = Math.max(0, startDelay + i * charStep + jitter);
+        const dur = 500 + Math.floor(Math.random() * 400);
+        span.style.animationDelay = `${delay}ms`;
+        span.style.animationDuration = `${dur}ms`;
+        fragment.appendChild(span);
+    });
+    return fragment;
+}
+
 const ALLOWED_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
     'UL', 'OL', 'LI', 'STRONG', 'EM', 'CODE', 'PRE', 'BR', 'A', 'BLOCKQUOTE', 'IMG']);
 
@@ -293,9 +311,13 @@ function createHeroSection() {
     const heading = el('h1', 'hero-title');
     const ideaSpan = el('span', 'hero-idea', 'Idéer,');
     heading.appendChild(ideaSpan);
-    heading.appendChild(document.createTextNode(' kode & projekter'));
-    const subheadline = el('p', 'hero-subtitle reveal-hidden', 'En blog med rod i solidt fullstack håndværk');
-    const ctaButton = el('button', 'btn hero-cta reveal-hidden reveal-delay', 'Læs indlæg');
+    heading.appendChild(animateChars(' kode & projekter', 80, 60));
+
+    const subheadline = el('p', 'hero-subtitle');
+    subheadline.appendChild(animateChars('En blog med rod i solidt fullstack håndværk', 350, 25));
+
+    const ctaButton = el('button', 'btn hero-cta');
+    ctaButton.appendChild(animateChars('Læs indlæg', 700, 50));
     ctaButton.addEventListener('click', () => {
         navigateTo('/blogposts');
     });
@@ -309,22 +331,6 @@ function createHeroSection() {
     imageCol.appendChild(sketchImg);
 
     section.append(textCol, imageCol);
-
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add('reveal-visible');
-            // Remove reveal-hidden once the transition completes so the button's
-            // normal 200 ms hover transitions are restored.
-            entry.target.addEventListener('transitionend', () => {
-                entry.target.classList.remove('reveal-hidden', 'reveal-delay');
-            }, { once: true });
-            observer.unobserve(entry.target);
-        });
-    }, { threshold: 0.1 });
-
-    revealObserver.observe(subheadline);
-    revealObserver.observe(ctaButton);
 
     return section;
 }
