@@ -92,6 +92,28 @@
 }
 
 
+/* ----- 1b. Dark Mode Token Overrides ----- */
+[data-theme="dark"] :root {
+    --color-bg:            #1c1a17;
+    --color-surface:       #252220;
+    --color-text:          #e8e0d4;
+    --color-text-muted:    #9a9084;
+    --color-border:        #3a3530;
+    --color-border-hover:  #504840;
+    --color-border-strong: #6a6058;
+    --color-primary-light: #1a2e1a;
+    --color-header-bg:     rgba(28, 26, 23, 0.92);
+    --color-sidebar-bg:    #2e2a26;
+    --color-success-bg:    #1a2e1a;
+    --color-success-border:#2d5a2d;
+    --color-warning-bg:    #2a2010;
+    --color-warning-border:#6b520a;
+    --color-error-bg:      #2a1010;
+    --color-error-border:  #6b1a1a;
+    --color-forest-green-hover: rgba(45, 79, 30, 0.18);
+}
+
+
 /* ----- 2. Reset & Base ----- */
 *,
 *::before,
@@ -117,6 +139,7 @@ body {
     flex-direction: column;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 200ms ease, color 200ms ease;
 }
 
 
@@ -200,6 +223,39 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.btn-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--color-text);
+    transition: opacity var(--transition);
+    flex-shrink: 0;
+}
+
+.btn-theme-toggle:hover {
+    opacity: 0.6;
+}
+
+.btn-theme-toggle:focus-visible {
+    outline: 3px solid var(--color-action);
+    outline-offset: 3px;
 }
 
 .site-logo {
