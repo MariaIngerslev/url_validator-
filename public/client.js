@@ -566,6 +566,427 @@ function setupContactForm() {
     });
 }
 
+// --- Skill Deep-Dive Component ---
+
+const SKILL_CONTENT = {
+    express: {
+        title: 'Node.js / Express 5',
+        file: 'src/routes/comments.js',
+        language: 'javascript',
+        description: 'Express 5 videresender automatisk afviste promises fra async handlers til error-middlewaren — ingen try/catch boilerplate.',
+        code: `// Express 5: async errors propageres automatisk
+router.post('/', async (req, res) => {
+    const { name, content, postId } = req.body;
+    if (typeof content !== 'string' || !content.trim()) {
+        return res.status(400).json({ error: 'content er påkrævet' });
+    }
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error: 'Post ikke fundet' });
+
+    const comment = await Comment.create({
+        name: name?.trim() || undefined,
+        content: content.trim(),
+        postId,
+    });
+    res.status(201).json(comment);
+});`,
+    },
+    javascript: {
+        title: 'Vanilla JavaScript (ES6+)',
+        file: 'public/client.js',
+        language: 'javascript',
+        description: 'SPA-router bygget med History API og pre-kompilerede regex-mønstre — ingen framework-afhængighed.',
+        code: `// Pre-kompilér route-mønstre én gang ved opstart
+const routes = [
+    { path: '/',          render: renderHome },
+    { path: '/blogposts', render: renderBlogposts },
+    { path: '/posts/:id', render: renderPost },
+    { path: '/cv',        render: renderCv },
+].map(({ path, render }) => {
+    const paramNames = [];
+    const pattern = path.replace(/:([^/]+)/g, (_, name) => {
+        paramNames.push(name);
+        return '([^/]+)';
+    });
+    return { regex: new RegExp(\`^\${pattern}$\`), paramNames, render };
+});`,
+    },
+    mongodb: {
+        title: 'MongoDB / Mongoose 9',
+        file: 'src/models/Comment.js',
+        language: 'javascript',
+        description: 'Schema med type-validering, required-felter, defaults og et B-tree indeks på postId for effektiv kommentaropslagning.',
+        code: `const commentSchema = new mongoose.Schema({
+    name: {
+        type:    String,
+        default: 'Anonym',
+    },
+    content: {
+        type:     String,
+        required: true,
+    },
+    postId: {
+        type:     mongoose.Schema.Types.ObjectId,
+        ref:      'Post',
+        required: true,
+        index:    true,   // B-tree indeks til hurtig filtrering
+    },
+    createdAt: {
+        type:    Date,
+        default: Date.now,
+    },
+});
+module.exports = mongoose.model('Comment', commentSchema);`,
+    },
+    'rest-api': {
+        title: 'REST API Design',
+        file: 'src/routes/api.js',
+        language: 'javascript',
+        description: 'Deterministisk URL-validator eksponeret som REST-endpoint med strict payload-validering og en klar JSON-kontrakt.',
+        code: `// POST /api/validate-urls
+// Forventer: { urls: string[] }
+// Returnerer: { allSafe: boolean, results: [{url, safe, reason}] }
+router.post('/validate-urls', async (req, res) => {
+    const { urls } = req.body;
+    if (!Array.isArray(urls)) {
+        return res.status(400).json({ error: 'urls skal være et array' });
+    }
+    if (!urls.every(u => typeof u === 'string')) {
+        return res.status(400).json({ error: 'Alle urls skal være strings' });
+    }
+    const results = validateUrls(urls);
+    const allSafe = results.every(r => r.safe);
+    res.json({ allSafe, results });
+});`,
+    },
+    testing: {
+        title: 'Automatiseret Test (Jest)',
+        file: 'src/urlvalidator.test.js',
+        language: 'javascript',
+        description: 'Fuld enhedstest-dækning af URL-validatoren: happy path, blacklist, case-insensitivitet og malformede URLs.',
+        code: `describe('validateUrls', () => {
+    test('safe URL returnerer reason: safe', () => {
+        const [result] = validateUrls(['https://example.com']);
+        expect(result.safe).toBe(true);
+        expect(result.reason).toBe('safe');
+    });
+
+    test('blacklistet domæne markeres som unsafe', () => {
+        const [result] = validateUrls(['https://malware.example.com']);
+        expect(result.safe).toBe(false);
+        expect(result.reason).toBe('blacklisted');
+    });
+
+    test('matchning er case-insensitiv (VIRUS.EXE)', () => {
+        const [result] = validateUrls(['https://example.com/VIRUS.EXE']);
+        expect(result.safe).toBe(false);
+        expect(result.reason).toBe('blacklisted');
+    });
+
+    test('malformet URL returnerer reason: malformed', () => {
+        const [result] = validateUrls(['not-a-url']);
+        expect(result.safe).toBe(false);
+        expect(result.reason).toBe('malformed');
+    });
+});`,
+    },
+    xss: {
+        title: 'XSS-forebyggelse',
+        file: 'public/client.js',
+        language: 'javascript',
+        description: 'DOMParser-baseret sanitizer med eksplicit allowlist. Al markup fra ikke-godkendte tags konverteres til plain text — script-injection er strukturelt umulig.',
+        code: `const ALLOWED_TAGS = new Set([
+    'P','H1','H2','H3','H4','H5','H6',
+    'UL','OL','LI','STRONG','EM','CODE',
+    'PRE','BR','A','BLOCKQUOTE','IMG',
+]);
+
+function sanitizeHtml(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    function walkNodes(sourceNode, targetParent) {
+        for (const child of sourceNode.childNodes) {
+            if (child.nodeType === Node.TEXT_NODE) {
+                targetParent.appendChild(
+                    document.createTextNode(child.textContent)
+                );
+            } else if (ALLOWED_TAGS.has(child.tagName)) {
+                const safeEl = document.createElement(child.tagName);
+                if (child.tagName === 'A') {
+                    const href = child.getAttribute('href');
+                    if (/^https?:\\/\\//.test(href)) safeEl.href = href;
+                }
+                walkNodes(child, safeEl);
+                targetParent.appendChild(safeEl);
+            } else {
+                walkNodes(child, targetParent); // strip tag, keep text
+            }
+        }
+    }
+    // ...
+}`,
+    },
+    defensive: {
+        title: 'Defensiv Programmering',
+        file: 'src/middleware/validateObjectId.js',
+        language: 'javascript',
+        description: 'Genanvendelig Express-middleware til MongoDB ObjectId-validering — én enkelt kilde til korrekthed på tværs af alle ruter.',
+        code: `const { isValidObjectId } = require('mongoose');
+
+// Brug: router.get('/:postId', validateObjectId('postId'), handler)
+function validateObjectId(paramName) {
+    return (req, res, next) => {
+        if (!isValidObjectId(req.params[paramName])) {
+            return res.status(400).json({
+                error: \`Ugyldigt ID-format: \${paramName}\`,
+            });
+        }
+        next();
+    };
+}
+
+module.exports = validateObjectId;`,
+    },
+    docs: {
+        title: 'Teknisk Dokumentation',
+        file: null,
+        language: 'text',
+        description: 'Al kode skrives med dokumentation in mente: intentionsafslørede navne, en CLAUDE.md der fungerer som levende arkitekturbeskrivelse og commit-beskeder der forklarer "hvorfor" frem for "hvad". Kode skal være teamklar fra dag ét.',
+        code: null,
+    },
+    git: {
+        title: 'Git — Conventional Commits',
+        file: null,
+        language: 'text',
+        description: 'Struktureret commit-historik med Conventional Commits-standarden. Hvert commit følger mønsteret type(scope): beskrivelse for maskinel læsbarhed og klar historik.',
+        code: `feat(comments): tilføj URL-sikkerhedstjek ved indsendelse
+fix(api): afvis ikke-array urls payload med 400 Bad Request
+refactor(routes): udtrk validateObjectId til genanvendelig middleware
+chore(deps): opgradér Express til 5.1.0
+docs(readme): tilføj arkitekturoversigt og portfolio-sammendrag
+test(urlvalidator): tilføj dækning for case-insensitiv matchning`,
+    },
+    agile: {
+        title: 'Jira / Agile Workflows',
+        file: null,
+        language: 'text',
+        description: 'Erfaring med agile arbejdsmetoder fra The Odin Project og Datamatiker-studiet: sprint planning, backlog refinement og definition of done. Vant til at strukturere arbejde i epics, user stories og tasks med tydelig accept-kriterie.',
+        code: null,
+    },
+    eslint: {
+        title: 'ESLint 10',
+        file: 'eslint.config.js',
+        language: 'javascript',
+        description: 'Statisk kodeanalyse integreret i udviklingsworflowet — fanger potentielle fejl og håndhæver stil-konventioner før kode når review.',
+        code: `import js from '@eslint/js';
+import globals from 'globals';
+
+export default [
+    js.configs.recommended,
+    {
+        languageOptions: {
+            ecmaVersion: 2022,
+            globals: {
+                ...globals.node,
+                ...globals.browser,
+            },
+        },
+        rules: {
+            'no-unused-vars':      'warn',
+            'eqeqeq':             'error',
+            'no-implicit-globals': 'error',
+            'no-eval':             'error',
+        },
+    },
+];`,
+    },
+    'ai-agents': {
+        title: 'Claude Code & AI Agents',
+        file: null,
+        language: 'text',
+        description: 'Daglig brug af AI-assisterede udviklingstools: Claude Code til arkitekturdrøftelser, kode-review og security-gennemgang. Menneskeligt tilsyn er altid afgørende — AI er et produktivitetsværktøj, ikke en erstatning for faglig dømmekraft.',
+        code: null,
+    },
+    java: {
+        title: 'Java / OOP',
+        file: null,
+        language: 'text',
+        description: 'Aktuel studie på Datamatiker-uddannelsen (Erhvervsakademi Aarhus, Jan 2026–). Fokus på objektorienteret design, arv, indkapsling og polymorfi — principper der allerede afspejles i JavaScript-koden: single responsibility, genanvendelige moduler og defensiv type-validering.',
+        code: null,
+    },
+    'html-css': {
+        title: 'HTML5 / CSS3',
+        file: null,
+        language: 'text',
+        description: 'Semantisk HTML5 og moderne CSS3 med custom properties, CSS Grid, Flexbox og mobile-first responsive design. Denne portfolio bruger udelukkende vanilla CSS — ingen frameworks, fuld kontrol over hvert pixel.',
+        code: null,
+    },
+    languages: {
+        title: 'Dansk / Engelsk',
+        file: null,
+        language: 'text',
+        description: 'Dansk modersmål med professionel skriftlig og mundtlig kommunikation. Engelsk på flydende niveau — al kode, teknisk dokumentation og professionelle diskussioner foregår på engelsk.',
+        code: null,
+    },
+};
+
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+const JS_KEYWORDS = new Set([
+    'const', 'let', 'var', 'function', 'return', 'new', 'if', 'else',
+    'async', 'await', 'require', 'module', 'exports', 'import', 'from',
+    'class', 'extends', 'this', 'typeof', 'instanceof', 'true', 'false',
+    'null', 'undefined', 'describe', 'test', 'expect', 'it', 'for', 'of',
+    'in', 'default', 'export',
+]);
+
+function highlightJs(raw) {
+    let out = '';
+    let i = 0;
+    const len = raw.length;
+
+    while (i < len) {
+        // Line comment
+        if (raw[i] === '/' && raw[i + 1] === '/') {
+            const end = raw.indexOf('\n', i);
+            const slice = end === -1 ? raw.slice(i) : raw.slice(i, end);
+            out += `<span class="hl-comment">${escapeHtml(slice)}</span>`;
+            i = end === -1 ? len : end;
+            continue;
+        }
+        // Block comment
+        if (raw[i] === '/' && raw[i + 1] === '*') {
+            const end = raw.indexOf('*/', i + 2);
+            const slice = end === -1 ? raw.slice(i) : raw.slice(i, end + 2);
+            out += `<span class="hl-comment">${escapeHtml(slice)}</span>`;
+            i = end === -1 ? len : end + 2;
+            continue;
+        }
+        // Single or double quoted string
+        if (raw[i] === "'" || raw[i] === '"') {
+            const quote = raw[i];
+            let j = i + 1;
+            while (j < len && raw[j] !== quote) {
+                if (raw[j] === '\\') j++;
+                j++;
+            }
+            j++;
+            out += `<span class="hl-string">${escapeHtml(raw.slice(i, j))}</span>`;
+            i = j;
+            continue;
+        }
+        // Template literal
+        if (raw[i] === '`') {
+            let j = i + 1;
+            while (j < len && raw[j] !== '`') {
+                if (raw[j] === '\\') j++;
+                j++;
+            }
+            j++;
+            out += `<span class="hl-string">${escapeHtml(raw.slice(i, j))}</span>`;
+            i = j;
+            continue;
+        }
+        // Identifiers and keywords
+        if (/[a-zA-Z_$]/.test(raw[i])) {
+            let j = i;
+            while (j < len && /[a-zA-Z0-9_$]/.test(raw[j])) j++;
+            const word = raw.slice(i, j);
+            out += JS_KEYWORDS.has(word)
+                ? `<span class="hl-keyword">${escapeHtml(word)}</span>`
+                : escapeHtml(word);
+            i = j;
+            continue;
+        }
+        // Numbers
+        if (/[0-9]/.test(raw[i])) {
+            let j = i;
+            while (j < len && /[0-9.]/.test(raw[j])) j++;
+            out += `<span class="hl-number">${escapeHtml(raw.slice(i, j))}</span>`;
+            i = j;
+            continue;
+        }
+        // Everything else
+        out += escapeHtml(raw[i]);
+        i++;
+    }
+    return out;
+}
+
+function buildPeekContent(content) {
+    const fragment = document.createDocumentFragment();
+
+    const header = el('div', 'skill-peek-header');
+    header.appendChild(el('p', 'skill-peek-title', content.title));
+    if (content.file) {
+        header.appendChild(el('p', 'skill-peek-file', content.file));
+    }
+    fragment.appendChild(header);
+    fragment.appendChild(el('p', 'skill-peek-description', content.description));
+
+    if (content.code) {
+        const pre = document.createElement('pre');
+        pre.className = 'skill-peek-code-block';
+        const codeEl = document.createElement('code');
+        codeEl.innerHTML = content.language === 'javascript'
+            ? highlightJs(content.code)
+            : escapeHtml(content.code);
+        pre.appendChild(codeEl);
+        fragment.appendChild(pre);
+    }
+
+    return fragment;
+}
+
+function initSkillDeepDive() {
+    const categoriesEl = document.querySelector('.skill-categories');
+    const peekEl = document.getElementById('skill-peek');
+    if (!categoriesEl || !peekEl) return;
+
+    const peekInner = peekEl.querySelector('.skill-peek-inner');
+    let activeSkill = null;
+
+    function showPlaceholder() {
+        peekInner.textContent = '';
+        peekInner.appendChild(
+            el('p', 'skill-peek-placeholder', 'Vælg en kompetence for at se et kodeeksempel fra projektet.')
+        );
+    }
+
+    categoriesEl.addEventListener('click', (event) => {
+        const chip = event.target.closest('.skill-chip');
+        if (!chip) return;
+
+        const skill = chip.dataset.skill;
+
+        if (skill === activeSkill) {
+            chip.classList.remove('is-active');
+            peekEl.classList.remove('is-open');
+            activeSkill = null;
+            showPlaceholder();
+            return;
+        }
+
+        document.querySelectorAll('.skill-chip.is-active')
+            .forEach(c => c.classList.remove('is-active'));
+        chip.classList.add('is-active');
+
+        const content = SKILL_CONTENT[skill];
+        if (!content) return;
+
+        peekInner.textContent = '';
+        peekInner.appendChild(buildPeekContent(content));
+        peekEl.classList.add('is-open');
+        activeSkill = skill;
+    });
+}
+
 // --- Initial Load ---
 setupContactForm();
+initSkillDeepDive();
 navigateTo(window.location.pathname, false);
