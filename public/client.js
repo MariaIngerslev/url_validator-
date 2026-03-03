@@ -121,9 +121,9 @@ const el = (tag, className, textContent) => {
 
 // Returns a randomized inter-character delay (ms) to simulate human typing rhythm.
 function humanTypeDelay(char) {
-    const base = 45 + Math.random() * 65;           // 45–110ms base range
-    if (char === '&') return base + 55;              // natural pause at the symbol
-    if (Math.random() < 0.08) return base + 140 + Math.random() * 100; // rare stutter
+    const base = 90 + Math.random() * 110;           // 90–200ms base range
+    if (char === '&') return base + 100;              // natural pause at the symbol
+    if (Math.random() < 0.08) return base + 250 + Math.random() * 150; // rare stutter
     return base;
 }
 
@@ -348,9 +348,11 @@ function createHeroSection() {
     const typedContainer = document.createElement('span');
     typedContainer.setAttribute('aria-hidden', 'true');
     const typedChars = [];
-    for (const char of 'kode & projekter') {
+    for (const char of 'kode &\nprojekter') {
         if (char === ' ') {
             typedContainer.appendChild(document.createTextNode(' '));
+        } else if (char === '\n') {
+            typedContainer.appendChild(document.createElement('br'));
         } else {
             const span = document.createElement('span');
             span.className = 'hero-typechar';
