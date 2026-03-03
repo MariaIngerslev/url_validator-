@@ -291,9 +291,9 @@ function createHeroSection() {
 
     const textCol = el('div', 'hero-text');
     const heading = el('h1', 'hero-title');
-    const ideaSpan = el('span', 'hero-idea', 'Idéer');
+    const ideaSpan = el('span', 'hero-idea', 'Idéer,');
     heading.appendChild(ideaSpan);
-    heading.appendChild(document.createTextNode(', kode & projekter'));
+    heading.appendChild(document.createTextNode(' kode & projekter'));
     const subheadline = el('p', 'hero-subtitle', 'En blog med rod i solidt fullstack håndværk');
     const ctaButton = el('button', 'btn hero-cta', 'Læs indlæg');
     ctaButton.addEventListener('click', () => {

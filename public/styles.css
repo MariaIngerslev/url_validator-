@@ -405,7 +405,7 @@ body {
 }
 
 .hero-idea {
-    color: var(--color-primary);
+    color: var(--color-primary-hover);
 }
 
 .hero-subtitle {
@@ -832,6 +832,10 @@ body {
     font-size: var(--font-size-sm);
     color: inherit;
     font-family: inherit;
+}
+
+.post-article pre + img {
+    margin-top: 4rem;
 }
 
 /* Minimal blockquote — thin muted left rule */
