@@ -1404,7 +1404,7 @@ body {
     padding-left: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-xl);
 }
 
 .om-mig-list li {
@@ -1414,11 +1414,25 @@ body {
     color: var(--color-text);
 }
 
+.erfaring-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
 .erfaring-date {
     font-family: var(--font-sans);
     font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
+    color: var(--color-primary);
     font-weight: 400;
+}
+
+.erfaring-desc {
+    display: block;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    margin-top: 0.35rem;
 }
 
 .om-mig-section p {
@@ -1430,7 +1444,9 @@ body {
 }
 
 .om-mig-section:first-child > p {
-    font-size: 1.125rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 70ch;
 }
 
 .om-mig-section p + p {
