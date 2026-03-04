@@ -1881,4 +1881,19 @@ body {
         grid-template-columns: 1fr;
         gap: var(--space-xl);
     }
+
+    .skill-categories {
+        grid-template-columns: 1fr;
+    }
+
+    .skill-peek {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .code-preview-wrap {
+        overflow-x: auto;
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
