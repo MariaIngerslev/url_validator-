@@ -646,6 +646,7 @@ body {
     max-height: 85vh;
     object-fit: contain;
     object-position: right center;
+    border-radius: 12px;
 }
 
 /* Tablet: stack vertically, image below text */
