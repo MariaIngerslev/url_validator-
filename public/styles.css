@@ -94,7 +94,7 @@
 
 /* ----- 1b. Dark Mode Token Overrides ----- */
 :root[data-theme="dark"] {
-    --color-bg:            #1c1a17;
+    --color-bg:            #1d1b16;
     --color-surface:       #252220;
     --color-text:          #e8e0d4;
     --color-text-muted:    #9a9084;
