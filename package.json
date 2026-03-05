@@ -8,7 +8,8 @@
     "start": "node src/main.js",
     "envlog": "node sandbox/envlog.js",
 "update-first-post": "node scripts/update-first-post.js",
-    "update-ralph-loop-post": "node scripts/update-ralph-loop-post.js"
+    "update-ralph-loop-post": "node scripts/update-ralph-loop-post.js",
+    "update-security-post": "node scripts/update-security-post.js"
   },
   "keywords": [],
   "author": "",
