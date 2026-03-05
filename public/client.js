@@ -34,7 +34,7 @@ function navigateTo(url, pushState = true) {
         window.history.pushState(null, '', url);
         window.scrollTo(0, 0);
     }
-    const matched = matchRoute(window.location.pathname);
+    const matched = matchRoute(decodeURIComponent(window.location.pathname));
     if (matched) {
         matched.render(matched.params);
     } else {
@@ -54,7 +54,7 @@ document.addEventListener('click', (event) => {
 });
 
 window.addEventListener('popstate', () => {
-    navigateTo(window.location.pathname, false);
+    navigateTo(decodeURIComponent(window.location.pathname), false);
 });
 
 // --- DOM References ---

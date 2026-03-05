@@ -1,5 +1,6 @@
 const SECURITY_POST = {
     title: 'Defense in Depth: Sådan hærdede jeg platformen lag for lag',
+    heroImage: '/images/blog/security.png',
     content: `<h2>1. Sikkerhed er ikke en eftertanke</h2>
 
 <p>Sikkerhed er ikke noget, man skruer på til sidst — det er en disciplin, man bygger ind i hvert lag af systemet. Dette indlæg dokumenterer en serie målrettede hærdningstiltag, jeg for nylig har sendt afsted til denne platform, forklarer den trussel, hvert enkelt tiltag adresserer, og beskriver, hvordan de tilsammen udgør et lagdelt forsvar.</p>
