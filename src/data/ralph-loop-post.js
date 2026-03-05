@@ -1,9 +1,7 @@
 const RALPH_LOOP_POST = {
     title:     "The Stateless Developer: Genvej til fejlfri AI-kode",
     heroImage: '/images/blog/ralph_loop.jpg',
-    content: `<img src="/images/blog/ralph_loop.jpg" alt="The Stateless Developer" />
-
-<h2>1. Krogen: Når AI'en mister den røde tråd</h2>
+    content: `<h2>1. Krogen: Når AI'en mister den røde tråd</h2>
 
 <p>Jeg er i øjeblikket ved at bygge en sikker blog fra bunden ved hjælp af Vanilla JS på frontend-siden og Express (Node.js) på backend-siden. For nylig begyndte jeg at eksperimentere med AI-værktøjer (som Claude Code) til at hjælpe med at "vibecode" - altså at frembringe hurtige iterationer af mit UX/UI.</p>
 
