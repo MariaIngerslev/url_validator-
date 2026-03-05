@@ -634,6 +634,7 @@ function setupContactForm() {
         const lastName  = document.getElementById('contact-last-name').value.trim();
         const email     = document.getElementById('contact-email').value.trim();
         const message   = document.getElementById('contact-message').value.trim();
+        const website   = document.getElementById('contact-website').value; // honeypot
 
         if (!firstName || !lastName || !email || !message) {
             showContactError('Udfyld venligst alle felter.');
@@ -645,7 +646,7 @@ function setupContactForm() {
         submitButton.textContent = 'Sender...';
 
         try {
-            const { ok, body } = await submitContactMessage({ firstName, lastName, email, message });
+            const { ok, body } = await submitContactMessage({ firstName, lastName, email, message, website });
 
             if (!ok) {
                 showContactError(body.error || 'Noget gik galt. Prøv igen.');

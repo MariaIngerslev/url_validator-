@@ -7,7 +7,7 @@
     "test": "jest",
     "start": "node src/main.js",
     "envlog": "node sandbox/envlog.js",
-"update-first-post": "node scripts/update-first-post.js",
+    "update-first-post": "node scripts/update-first-post.js",
     "update-ralph-loop-post": "node scripts/update-ralph-loop-post.js",
     "update-security-post": "node scripts/update-security-post.js"
   },
@@ -20,7 +20,8 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "helmet": "^8.1.0",
-    "mongoose": "9.2.0"
+    "mongoose": "9.2.0",
+    "nodemailer": "^8.0.1"
   },
   "jest": {
     "setupFilesAfterEnv": [
